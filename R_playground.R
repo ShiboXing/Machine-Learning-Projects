@@ -28,6 +28,55 @@ a_named_vec <- c(a = 'ahuo', b = 'bhuo',c = 'chuo', z = 'zhuo')
 #0 returns empty, 0 returns NA
 print(cat(a_named_vec,a_named_vec[1], a_named_vec[0], a_named_vec[3], a_named_vec[1:3]))
 #c() combines argument
-a_named_vec[c(1,2,4)]
+a_named_vec[c(1,2,3)]
+err_vec = c(1, 2, 'err')
+print(cat(err_vec, ',', typeof(err_vec)))
+
+#lists
+my_lists <- list(var1 = 1:2, var2 = c('test', 'test2'),
+                 var3 = seq(-1, 1, length.out = 5),
+                 var4 = c('hello', 'goodbye'))
+print(my_lists)
+print(cat(my_lists$var2,length(my_lists),my_lists[[2]], my_lists[['var4']],
+          str(my_lists)))
+
+
+#dataframe:
+my_df <- data.frame(x_1 = 1:4,
+                    x_2 = c("yes", "no", "hello", "maybe"),
+                    x_3 = seq(-1, 1, length.out = 4),
+                    x_4 = c(TRUE, TRUE, FALSE, TRUE))
+my_df
+str(my_df)
+class(my_df$x_1)
+my_df[2,1] #the second row first column
+my_df[c(1, 3, 4), 3]
+my_df[, c(1,4)]
+my_df[, c('x_1', 'x_3')]
+
+#iris dataset
+iris
+iris[1:11, 'Sepal.Length']
+
+iris[iris$Species == 'setosa', ]
+iris[iris$Sepal.Length > 5.8, ]
+
+#packages
+library(dplyr)
+library(ggplot2)
+
+#pipe in package magrittr
+names(iris)
+iris %>% names()
+length(names(iris))
+iris %>% names() %>% length()
+length(names(iris))
+
+x <- rnorm(100)
+x %<>% abs %>% sort #call abs on x and write back to x
+
+
+
+
 
 
