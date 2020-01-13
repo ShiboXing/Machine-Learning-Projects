@@ -75,6 +75,26 @@ length(names(iris))
 x <- rnorm(100)
 x %<>% abs %>% sort #call abs on x and write back to x
 
+#tibble
+my_df
+my_df %>% tbl_df %>% glimpse #glimpse is tidyverse's alternative to str()
+my_df %>% tbl_df %>% select(c(1, 3))
+c('pitt', 'and ', 'psu') %>% str
+my_df %>% tbl_df %>% slice(c(1, 2, 4)) %>% filter(x_3 > 0)
+my_df[2,4] <- FALSE
+my_df
+my_df %>% tbl_df %>% filter(x_3 < 0 & x_4 == FALSE)
+
+#ggplot
+  iris %>% ggplot(mapping = aes(x = Sepal.Length)) +
+  geom_freqpoly(bins = 20, mapping = aes(color = Sepal.Width > median(Sepal.Width))) +
+  facet_wrap(~Species) + 
+  theme(legend.position = "top")
+
+iris %>% summary()
+
+
+
 
 
 

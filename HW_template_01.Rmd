@@ -46,7 +46,8 @@ The supplemental reading material [A Very Quick Intro to R](https://github.com/j
 #### SOLUTION
 
 ```{r, solution_01a}
-### your code here
+iris %>% ggplot(mapping = aes(x = Sepal.Length)) + 
+  geom_histogram(bins = 6)
 ```
 
 ### 1b)
@@ -63,6 +64,8 @@ Even though an aesthetic can be linked to a variable, some aesthetics can be mod
 
 ```{r, solution_01b}
 ### your code here
+iris %>% ggplot(mapping = aes(x = Sepal.Length)) + 
+  geom_histogram(bins = 6, color = 'black')
 ```
 
 ### 1c)
@@ -77,6 +80,8 @@ Even though an aesthetic can be linked to a variable, some aesthetics can be mod
 
 ```{r, solution_01c}
 ### your code here
+iris %>% ggplot(mapping = aes(x = Sepal.Length)) + 
+  geom_histogram(bins = 6, color = 'navyblue', fill = 'gold')
 ```
 
 ### 1d)
@@ -90,7 +95,8 @@ We can alter the size or thickness of the lines around each bin with the `size` 
 #### SOLUTION
 
 ```{r, solution_01d}
-### your code here
+iris %>% ggplot(mapping = aes(x = Sepal.Length)) + 
+  geom_histogram(bins = 6, size = 1.55, color = 'navyblue', fill = 'gold')
 ```
 
 ### 1e)
@@ -104,7 +110,8 @@ Lastly, the transparency of geometric objects can be altered with the `alpha` ar
 #### SOLUTION
 
 ```{r, solution_01e}
-### your code here
+iris %>% ggplot(mapping = aes(x = Sepal.Length)) + 
+  geom_histogram(bins = 6, size = 1.55, color = 'navyblue', fill = 'gold', alpha = 0.5)
 ```
 
 ## Problem 2
@@ -121,8 +128,8 @@ As discussed in the supplemental reading material, `geom_histogram()` performs m
 
 #### SOLUTION
 
-```{r, solution_02a, eval=FALSE}
-num_breaks <- ### your answer here
+```{r, solution_02a, eval=TRUE}
+num_breaks <- 7
 ```
 
 ### 2b)
@@ -135,17 +142,18 @@ Next, create the vector `hist_breaks` by breaking up the range spanned by `Sepal
 
 #### SOLUTION
 
-```{r, solution_02b, eval=FALSE}
+```{r, solution_02b, eval=TRUE}
 lower_bound <- 4.2
 
 upper_bound <- 8.2
 
-hist_breaks <- seq(from = , to =, length.out = num_breaks)
+hist_breaks <- seq(from = lower_bound, to = upper_bound, length.out = num_breaks)
+
 ```
 
 ### 2c)
 
-With the break positions defined, we can discretize `Sepal.Length` into bins via the `cut()` function. To learn about `cut()`, type `?cut` into the R console in order to bring up the documentation. As the help page says, `cut()` divides a numeric variable into discrete bins and converts the result the a factor. The bin "edges" are based on the values specified by the `breaks` argument to the `cut()` function. We will practice working with `cut()` first, before applying it to the `Sepal.Length` variable within the `iris` dataset.  
+With the break positions defined, we can discretize `Sepal.Length` into bins via the `cut()` function. To learn about `cut()`, type `?cut` into the R console in order to bring up the documentation. As the help page says, `cut()` divides a numeric variable into discrete bins and converts the result the a factor. The bin "edges" are based on the values specified by the `breaks` argument to the `cut()` function. We will practice working with `cut()` first, before applying it to the `Sepal.Length` variable within the `iris` dataset. 
 
 #### PROBLEM
 
@@ -153,10 +161,11 @@ With the break positions defined, we can discretize `Sepal.Length` into bins via
 
 #### SOLUTION
 
-```{r, solution_02c, eval=FALSE}
-x_dbl <- ### create vector 0 to 11
+```{r, solution_02c, eval=TRUE}
 
-x_factor <- cut(x_dbl, breaks = ) ### set the breaks argument
+x_dbl <- 0:11 ### create vector 0 to 11
+  
+x_factor <- cut(x_dbl, breaks = c(0, 5, 11)) ### set the breaks argument
 
 class(x_factor)
 
@@ -165,7 +174,7 @@ x_factor
 
 ### 2d)
 
-The unique values associated with a factor variable are displayed in the line below the individual elements of the vector. In `R` nomenclature, factor unique values are referred to as "levels". In your answer to Problem 2c) however, you should notice that the first printed element reads `<NA>`. That's because the discretized intervals are setup to be (<lower value>, <upper value>] (which reads as "from but exluding lower value, to and including upper value"). We can modify this structure to include the lowest (minimum) value in the dataset by setting `include.lowest = TRUE` in the call to the `cut()` function.  
+The unique values associated with a factor variable are displayed in the line below the individual elements of the vector. In `R` nomenclature, factor unique values are referred to as "levels". In your answer to Problem 2c) however, you should notice that the first printed element reads `<NA>`. That's because the discretized intervals are setup to be (<lower value>, <upper value>] (which reads as "from but excluding lower value, to and including upper value"). We can modify this structure to include the lowest (minimum) value in the dataset by setting `include.lowest = TRUE` in the call to the `cut()` function.  
 
 #### PROBLEM
 
@@ -173,8 +182,8 @@ The unique values associated with a factor variable are displayed in the line be
 
 #### SOLUTION
 
-```{r, solution_02d, eval=FALSE}
-x_factor_2 <- cut(x_dbl, breaks = ) ### set the breaks and add the new argument
+```{r, solution_02d, eval=TRUE}
+x_factor_2 <- cut(x_dbl, breaks = c(0, 5, 11), include.lowest = TRUE) ### set the breaks and add the new argument
 
 x_factor_2
 ```
@@ -189,9 +198,10 @@ We will now modify the `iris` dataset by discretizing `Sepal.Length` via the `cu
 
 #### SOLUTION
 
-```{r, solution_02e, eval=FALSE}
+```{r, solution_02e, eval=TRUE}
 my_iris <- iris %>% 
-  mutate(sepal_length_bin = )
+  mutate(sepal_length_bin = cut(iris$Sepal.Length, breaks = hist_breaks, include.lowest = TRUE))
+
 ```
 
 ## Problem 3
@@ -209,7 +219,7 @@ Let's get an overview of the newly created variable, `sepal_length_bin`.
 #### SOLUTION
 
 ```{r, solution_03a}
-### your code here
+select(my_iris, 'sepal_length_bin') %>% summary()
 ```
 
 ### 3b)
@@ -222,8 +232,8 @@ Because `sepal_length_bin` is a factor variable, we can easily get the unique va
 
 #### SOLUTION
 
-```{r, solution_03b, eval=FALSE}
-levels( )
+```{r, solution_03b, eval=TRUE}
+levels(my_iris$sepal_length_bin)
 ```
 
 ### 3c)
@@ -236,8 +246,8 @@ In general, we can use the `unique()` function to identify the unique values con
 
 #### SOLUTION
 
-```{r, solution_03c, eval=FALSE}
-unique( )
+```{r, solution_03c, eval=TRUE}
+unique(my_iris$sepal_length_bin)
 ```
 
 ### 3d)
@@ -252,7 +262,7 @@ As you should have seen in the previous set of results, the `levels()` and `uniq
 
 ```{r, solution_03d, eval=FALSE}
 my_iris %>% 
-  distinct()
+  distinct(sepal_length_bin)
 ```
 
 ### 3e)
@@ -267,6 +277,7 @@ my_iris %>%
 
 ```{r, solution_03e}
 ### your code here
+my_iris %>% count(sepal_length_bin)
 ```
 
 ### 3f)
@@ -279,12 +290,16 @@ We have sufficient information with the `count()` function result to make a bar 
 
 #### SOLUTION
 
-```{r, solution_03f, eval=FALSE}
+```{r, solution_03f, eval=TRUE}
 ### complete the ggplot call below
 my_iris %>% 
   count(sepal_length_bin) %>% 
-  ggplot(mapping = aes( )) +
+  ggplot(mapping = aes(x = sepal_length_bin, y = n)) +
   geom_bar(stat = "identity")
+
+  #n() function returns the number observations of the current group
+
+
 ```
 
 ### 3g)
@@ -297,7 +312,9 @@ The resulting bar graph in Problem 3f) looks different from the histogram visual
 
 #### SOLUTION
 
-Type your answer here.  
+Here we map the sepal_length_bin to the x-axis. 'sepal_length_bin' was created by cut() function with 3 breakpoints, generating four possible values. Since we didn't set a arbitrary bin count, naturally we will have 4 intervals, as in 4 bins in our 3f) histogram. 
+
+In problem 1, we map the Sepal.length to the x-axis, which has more unique values than sepal_length_bin. Also, we set the bin count to an arbitrary number. Thus, the x-axes of the histograms look differently in these two problems. 
 
 ## Problem 4
 
@@ -313,9 +330,9 @@ The grouping variables are specified using non-standard evaluation in the `group
 
 #### SOLUTION
 
-```{r, solution_04a, eval=FALSE}
+```{r, solution_04a, eval=TRUE}
 my_iris %>% 
-  group_by( )
+  group_by(sepal_length_bin) #grouping doesn't change how data looks
 ```
 
 ### 4b)
@@ -332,13 +349,13 @@ The code chunk below shows how the number of observations per `sepal_length_bin`
 
 #### SOLUTION
 
-```{r, solution_04b, eval=FALSE}
+```{r, solution_04b, eval=TRUE}
 my_iris %>% 
-  group_by( ) %>% 
-  summarise(  = n())
+  group_by(sepal_length_bin) %>% 
+  summarise( num_obs = n())
 ```
 
-Type your answer to the question here.  
+The n() function gets the same result as the count() function. The difference between the two is simply how we format them. n() can only be used in certain dplyr functions like summarise(), which returns the number of observation in each group. If we want to achieve the same result with count(), we simply pipe the result of the group_by() to the count() function. 
 
 ### 4c)
 
@@ -350,13 +367,13 @@ We can do more than just counting in the `summarize()` call. We can calculate av
 
 #### SOLUTION
 
-```{r, solution_04c, eval=FALSE}
+```{r, solution_04c, eval=TRUE}
 iris_group <- my_iris %>% 
-  group_by( ) %>% 
+  group_by(sepal_length_bin) %>% 
   summarise(num_obs = n(),
-            avg_sepal_length = ,
-            min_sepal_length = ,
-            max_sepal_length = )
+            avg_sepal_length = mean(Sepal.Length),
+            min_sepal_length = min(Sepal.Length),
+            max_sepal_length = max(Sepal.Length))
 
 iris_group
 ```
@@ -371,11 +388,11 @@ We can use the grouped and summarized dataset to create a simple histogram which
 
 #### SOLUTION
 
-```{r, solution_04d, eval=FALSE}
+```{r, solution_04d, eval=TRUE}
 iris_group %>% 
-  ggplot(mapping = aes(x = )) +
-  geom_point(mapping = aes(y = ),
-             size = )
+  ggplot(mapping = aes(x = avg_sepal_length)) +
+  geom_point(mapping = aes(y = num_obs),
+             size = 4)
 ```
 
 ### 4e)
@@ -390,13 +407,13 @@ A scatter plot can be very useful graphic, but it can be difficult to visualize 
 
 #### SOLUTION
 
-```{r, solution_04e, eval=FALSE}
+```{r, solution_04e, eval=TRUE}
 iris_group %>% 
-  ggplot(mapping = aes(x = )) +
-  geom_linerange(mapping = aes(ymin = ,
-                               ymax = )) +
-  geom_point(mapping = aes(y = ),
-             size = )
+  ggplot(mapping = aes(x = avg_sepal_length)) +
+  geom_linerange(mapping = aes(ymin = 0,
+                               ymax = num_obs)) +
+  geom_point(mapping = aes(y = num_obs),
+             size = 4)
 ```
 
 ### 4f)
@@ -411,19 +428,21 @@ The graphic we wish to make does not just contain multiple layers but multiple d
 
 #### SOLUTION
 
-```{r, solution_04f_a, eval=FALSE}
+```{r, solution_04f_a, eval=TRUE}
 iris_group %>% 
-  ggplot(mapping = aes(x = )) +
-  geom_freqpoly(data = ,
-                mapping = aes(x = ),
+  ggplot(mapping = aes(x = avg_sepal_length)) +
+  geom_freqpoly(data = my_iris,
+                mapping = aes(x =Sepal.Length),
                 bins = 6, color = "red", size = 1.15) +
-  geom_linerange(mapping = aes(ymin = ,
-                               ymax = )) +
-  geom_point(mapping = aes(y = ),
-             size = )
+  geom_linerange(mapping = aes(ymin = 0,
+                               ymax = num_obs)) +
+  geom_point(mapping = aes(y = num_obs),
+             size = 4)
 ```
 
-Describe the differences between the two here.  
+Our histogram shows the increases and decreases of the number of observations. The change in the frequency of the data might not be clear in the native historgram. With the line segments in the histogram, we can more easily envision the distrbution of the data set. On the other hand, in the native histogram, many outliers and the uneven bars hinders our ability to make sense of the distribution. 
+
+Additionally, the average lengths that have the highest frequencies are shown, in the native histogram we can hardly tell what where mode of the distribution is. 
 
 ## Problem 5
 
@@ -641,13 +660,7 @@ $$
 
 ### 6f)
 
-The summation approach to writing the inner product is displayed for you below:  
-
-$$ 
-HERE
-$$
-
-The summation expression consists of three components. The first is the Sigma character, which is created by the typing `\sum`. If we want the sigma character to appear in line, we wrap dollar signs around it, `$\sum$`, and if we want it to appear within an equation block we wrap two dollar signs, `$$\sum$$`. The $n=1$ and $N$ characters are displayed below and above the Sigma character with the `_` and `^` special characters, respectively.  
+The summation expression displayed in the instructions for Problem 6f) consists of three components.  The first is the Sigma character, which is created by the typing `\sum`. If we want the sigma character to appear in line, we wrap dollar signs around it, `$\sum$`, and if we want it to appear within an equation block we wrap two dollar signs, `$$\sum$$`. The $n=1$ and $N$ characters are displayed below and above the Sigma character with the `_` and `^` special characters, respectively.  
 
 #### PROBLEM
 
