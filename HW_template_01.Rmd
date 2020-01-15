@@ -459,7 +459,7 @@ To demonstrate the usefulness of the boxplot, we will use the `diamonds` dataset
 #### SOLUTION
 
 ```{r, solution_05a}
-### your code here
+diamonds %>% glimpse()
 ```
 
 ### 5b)
@@ -477,7 +477,9 @@ Let's start by visualizing the relationship between `price` and `color`.
 #### SOLUTION
 
 ```{r, solution_05b}
-### your code here
+diamonds %>% 
+  ggplot(mapping = aes(x = color, y = price)) +
+  geom_boxplot()
 ```
 
 Discuss your conclusions here.  
@@ -493,7 +495,10 @@ Next, we will include the influence of the `cut` variable breaking up the graphi
 #### SOLUTION
 
 ```{r, solution_05c}
-### your code here
+diamonds %>% 
+  ggplot(mapping = aes(x = color, y = price)) +
+  geom_boxplot() +
+  facet_wrap(~ cut)
 ```
 
 ### 5d)
@@ -502,12 +507,15 @@ In addition to the `facet_wrap()` function, we can create subplots with the `fac
 
 #### PROBLEM
 
-**To see how this works, use `facet_grid()` instead of `facet_wrap()` and set the facetting variables to be `clarity` and `cut` for the vertical and horizontal directions, respectively.**  
+**To see how this works, use `facet_grid()` instead of `facet_wrap()` and set the facetting variables to be `clarity` and `cut` for the vertical and horizontal directions, respectively.** 
 
 #### SOLUTION
 
 ```{r, solution_05d}
-### your code here
+diamonds %>% 
+  ggplot(mapping = aes(x = color, y = price)) +
+  geom_boxplot() +
+  facet_grid(clarity ~ cut)
 ```
 
 ### 5e)
@@ -523,7 +531,11 @@ The resulting figure in Problem 5d) includes 3 out of the 4 C's. The remaining v
 #### SOLUTION
 
 ```{r, solution_05e}
-### your code here
+diamonds %>%
+  ggplot(mapping = aes(x = color, y = price)) +
+  geom_boxplot(mapping = aes(fill = carat > median(carat))) +
+  facet_grid(clarity ~ cut) +
+  theme(legend.position = 'top')
 ```
 
 ### 5f)
@@ -537,7 +549,12 @@ Due to the large number of subplots, the individual facets are quite small with 
 #### SOLUTION
 
 ```{r, solution_05f}
-### your code here
+diamonds %>%
+  filter(cut == 'Ideal', clarity == 'IF') %>%
+  ggplot(mapping = aes(x = color, y = price)) +
+  geom_boxplot(mapping = aes(fill = carat > median(diamonds$carat))) +
+  facet_grid(clarity ~ cut) +
+  theme(legend.position = 'top')
 ```
 
 ### 5g)
@@ -546,9 +563,11 @@ Due to the large number of subplots, the individual facets are quite small with 
 
 **Discuss the differences between the trends shown in the resulting figure in Problem 5f) with the trends shown in the figure in Problem 5b).**  
 
+
 #### SOLUTION
 
-Type your discussion here.  
+The trend shown in 5b mainly shows us how color affects the price of a diamond. Yet according to the box plot in 5b, color is not a dominant factor of price. All 7 color have similar price ranges. 
+5f on the other hand, shows us that the real determinant factor of price is carat, specifically as in IF cut. As it clearly shows that diamonds that have less carats are significant cheaper than those with more carats.
 
 ## Problem 6
 
@@ -597,8 +616,9 @@ As an example, one half written as a fraction is `$\frac{1}{2}$`. The rendered L
 #### SOLUTION
 
 $$ 
-HERE
+\frac{\partial{f}}{\partial{x_{1}}} = abx_{1}^{b - 1} 
 $$
+
 
 ### 6b)
 
@@ -613,7 +633,7 @@ Now write out the expression for the partial derivative of $f$ with respect to $
 #### SOLUTION
 
 $$ 
-HERE
+\frac{\partial{f}}{\partial{x_{2}}} = cdx_{2}^{d - 1}
 $$
 
 ### 6c)
@@ -627,7 +647,7 @@ As discussed in lecture, we also need to work with second derivatives.
 #### SOLUTION
 
 $$ 
-HERE
+\frac{\partial{f}}{\partial{x_{1}}} = (ab^{2} - ab)x_{1}^{b - 2}
 $$
 
 ### 6d)
@@ -641,12 +661,12 @@ The second derivative in 6c) represents the rate-of-change with respect to $x_1$
 #### SOLUTION
 
 $$ 
-HERE
+\frac{\partial^{2}{f}}{\partial{x_{1}}\partial{x_{2}}} = 0
 $$
 
 ### 6e)
 
-In lecture, we also reviewed important linear algebra concepts. We discussed the inner product, and how we can write it out two ways. One approach is with vector-vector math, while the other involves a summation. For the next several problems you will work with a vector $\mathbf{x}$ which is a $\left(N \times 1\right)$ column vector.  
+In lecture, we also reviewed important linear algebra concepts. We discussed the inner product, and how we can write it out two ways. One approach is with vector-vector math, while the other involves a summation. For the next several problems you will work with a vector $\mathbf{x}$ which is a $\left(N \times 1\right)$ column vector.
 
 #### PROBLEM
 

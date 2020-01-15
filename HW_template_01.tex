@@ -1,0 +1,1591 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={CS 1675 Homework: 01},
+            pdfauthor={Your name here},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+
+\title{CS 1675 Homework: 01}
+\providecommand{\subtitle}[1]{}
+\subtitle{Assigned: January 9, 2020; Due: January 17, 2020}
+\author{Your name here}
+\date{Submission time: January 17, 2020 at 5:00PM}
+
+\begin{document}
+\maketitle
+
+\hypertarget{collaborators}{%
+\paragraph{Collaborators}\label{collaborators}}
+
+Include the names of your collaborators here.
+
+\hypertarget{overview}{%
+\subsection{Overview}\label{overview}}
+
+This homework assignment focuses on the \texttt{ggplot2} and
+\texttt{dplyr} packages. You will work with aesthetics and practice data
+manipulation operations. Additionally, you will practice working with R
+Markdown by completing the template. You can see what the rendered
+document looks like at any time, by pressing the ``Knit'' button within
+RStudio. You can execute a code chunk by pressing the arrow button
+within that code chunk located to the upper right portion of the code
+chunk within the RStudio IDE. Alternatively, you can execute a line of
+code within a code chunk by selecting that line and pressing Ctrl+ENTER
+(Windows) or Command+ENTER (Mac).
+
+Completing this assignment requires filling in missing pieces of
+information from existing code chunks, programming complete code chunks
+from scratch, typing discussions about results, and working with LaTeX
+style math formulas. A template .Rmd file is available to use as a
+starting point for this homework assignment. The template is available
+on CourseWeb.
+
+\textbf{IMPORTANT:} Please pay attention to the \texttt{eval} flag
+within the code chunk options. Code chunks with \texttt{eval=FALSE} will
+\textbf{not} be evaluated (executed) when you Knit the document. You
+\textbf{must} change the \texttt{eval} flag to be \texttt{eval=TRUE}.
+This was done so that you can Knit (and thus render) the document as you
+work on the assignment, without worrying about errors crashing the code
+in questions you have not started. Code chunks which require you to
+enter all of the required code do not set the \texttt{eval} flag. Thus,
+those specific code chunks use the default option of \texttt{eval=TRUE}.
+
+\textbf{IMPORTANT:} Each problem provides a fair amount of discussion to
+help teach the \texttt{R} syntax. However, the last problem, Problem 6,
+involves writing LaTeX math code. Some of the discussion was removed
+from Problem 6 within this template .Rmd file because if it was included
+the answers would have been given away! Therefore, please consult the
+\texttt{HW\_instructions\_01.html} file for the complete discussion
+associated with Problem 6.
+
+\hypertarget{load-packages}{%
+\subsection{Load packages}\label{load-packages}}
+
+This homework assignment will use the following packages:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{problem-1}{%
+\subsection{Problem 1}\label{problem-1}}
+
+The supplemental reading material
+\href{https://github.com/jyurko/CS_1675_Spring_2020/blob/master/week_01/quick_r_intro.md}{A
+Very Quick Intro to R} introduced \texttt{ggplot2} by creating a
+histogram for the \texttt{Sepal.Length} variable within the
+\texttt{iris} dataset. We will use that figure to practice modifying
+color within a \texttt{ggplot2} graphic.
+
+\hypertarget{a}{%
+\subsubsection{1a)}\label{a}}
+
+\hypertarget{problem}{%
+\paragraph{PROBLEM}\label{problem}}
+
+\textbf{Create a histogram for \texttt{Sepal.Length} from \texttt{iris}
+with 6 bins, instead of the 15 bins used within the supplemental reading
+material.}
+
+\hypertarget{solution}{%
+\paragraph{SOLUTION}\label{solution}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_01a-1.pdf}
+
+\hypertarget{b}{%
+\subsubsection{1b)}\label{b}}
+
+By default, a \texttt{ggplot2} histogram does not show the lines
+associated with each bin (as in a bar graph). The histogram effectively
+looks like a discretized distribution. To adjust this, we need to
+override the default \texttt{fill} and \texttt{color} arguments to the
+\texttt{geom\_histogram()} function. Note that within \texttt{ggplot2},
+color is applied to line-like objects and points while fill is applied
+to whole areas of the graph (think ``fill in an area''). Thus, you can
+have substantial control over how color is used to visually present
+information within a graphic.
+
+Even though an aesthetic can be linked to a variable, some aesthetics
+can be modified ``manually'' and not associated with any variables
+within the dataset. We use the same type of argument, but we set that
+argument outside of the \texttt{aes()} function.
+
+\hypertarget{problem-2}{%
+\paragraph{PROBLEM}\label{problem-2}}
+
+\textbf{To see how this works, type \texttt{color\ =\ "black"} within
+the \texttt{geom\_histogram()} call. Be careful about your commas!}
+
+\hypertarget{solution-1}{%
+\paragraph{SOLUTION}\label{solution-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{### your code here}
+\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{6}\NormalTok{, }\DataTypeTok{color =} \StringTok{'black'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_01b-1.pdf}
+
+\hypertarget{c}{%
+\subsubsection{1c)}\label{c}}
+
+\texttt{ggplot2} has many ``named'' colors available for use. If you
+really want to fine tune your colors you are free to use the hex color
+codes! In this course, we will typically stick with common colors when
+we manually pick a color and/or fill.
+
+\hypertarget{problem-3}{%
+\paragraph{PROBLEM}\label{problem-3}}
+
+\textbf{To make the difference between color and fill explicit within
+the histogram, change the color to \texttt{color\ =\ "navyblue"} and
+modify the histogram's fill by setting \texttt{fill\ =\ "gold"}.}
+
+\hypertarget{solution-2}{%
+\paragraph{SOLUTION}\label{solution-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{### your code here}
+\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{6}\NormalTok{, }\DataTypeTok{color =} \StringTok{'navyblue'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'gold'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_01c-1.pdf}
+
+\hypertarget{d}{%
+\subsubsection{1d)}\label{d}}
+
+We can alter the size or thickness of the lines around each bin with the
+\texttt{size} argument.
+
+\hypertarget{problem-4}{%
+\paragraph{PROBLEM}\label{problem-4}}
+
+\textbf{Set \texttt{size\ =\ 1.55} within the \texttt{geom\_histogram()}
+call (using the same color scheme from Problem 1c)).}
+
+\hypertarget{solution-3}{%
+\paragraph{SOLUTION}\label{solution-3}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{6}\NormalTok{, }\DataTypeTok{size =} \FloatTok{1.55}\NormalTok{, }\DataTypeTok{color =} \StringTok{'navyblue'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'gold'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_01d-1.pdf}
+
+\hypertarget{e}{%
+\subsubsection{1e)}\label{e}}
+
+Lastly, the transparency of geometric objects can be altered with the
+\texttt{alpha} argument.
+
+\hypertarget{problem-5}{%
+\paragraph{PROBLEM}\label{problem-5}}
+
+\textbf{Set the transparency to \texttt{alpha\ =\ 0.5} within the
+\texttt{geom\_histogram()} call.}
+
+\hypertarget{solution-4}{%
+\paragraph{SOLUTION}\label{solution-4}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Sepal.Length)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{6}\NormalTok{, }\DataTypeTok{size =} \FloatTok{1.55}\NormalTok{, }\DataTypeTok{color =} \StringTok{'navyblue'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'gold'}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_01e-1.pdf}
+
+\hypertarget{problem-2-1}{%
+\subsection{Problem 2}\label{problem-2-1}}
+
+As discussed in the supplemental reading material,
+\texttt{geom\_histogram()} performs multiple operations behind the
+scenes in order to generate the histogram visualization. Understanding
+how those operations work will provide useful data wrangling and
+manipulation practice.
+
+\hypertarget{a-1}{%
+\subsubsection{2a)}\label{a-1}}
+
+\texttt{ggplot2} takes care of the binning and counting operations for
+us when we call the histogram function. Thus, we must perform those
+steps in order to recreate the histogram ``from scratch''. We will start
+by learning how to discretize a continuous variable. To accomplish this,
+we will need to create a vector which defines the edges of each bin
+within the histogram. Within \texttt{R} nomenclature, the edges are
+referred to as ``breaks''.
+
+\hypertarget{problem-6}{%
+\paragraph{PROBLEM}\label{problem-6}}
+
+\textbf{Since we used 6 bins for our histogram, how many breaks are
+associated with the histogram? Assign your answer to the variable
+\texttt{num\_breaks} in the code chunk below.}
+
+\hypertarget{solution-5}{%
+\paragraph{SOLUTION}\label{solution-5}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{num_breaks <-}\StringTok{ }\DecValTok{7}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{b-1}{%
+\subsubsection{2b)}\label{b-1}}
+
+Next, create the vector \texttt{hist\_breaks} by breaking up the range
+spanned by \texttt{Sepal.Length} via the \texttt{seq()} function.
+\texttt{seq()} has two main arguments: \texttt{from} and \texttt{to}. As
+the names suggest, the \texttt{from} argument is the start of the vector
+and the \texttt{to} argument is the end of the vector. In this problem,
+we will set the \texttt{from} and \texttt{to} arguments such that all
+observations are within the assigned discretized bounds. The third
+argument to \texttt{seq()} can take multiple forms, but all serve the
+same purpose: to define the length of the vector. For this problem, we
+will use the \texttt{length.out} argument.
+
+\hypertarget{problem-7}{%
+\paragraph{PROBLEM}\label{problem-7}}
+
+\textbf{Create the vector \texttt{hist\_breaks} with the \texttt{seq()}
+function. Use the provided \texttt{lower\_bound} and
+\texttt{upper\_bound} values in the code chunk below as the
+\texttt{from} and \texttt{to} arguments, respectively. Specify the
+\texttt{length.out} argument to be equal to \texttt{num\_breaks}.}
+
+\hypertarget{solution-6}{%
+\paragraph{SOLUTION}\label{solution-6}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lower_bound <-}\StringTok{ }\FloatTok{4.2}
+
+\NormalTok{upper_bound <-}\StringTok{ }\FloatTok{8.2}
+
+\NormalTok{hist_breaks <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\DataTypeTok{from =}\NormalTok{ lower_bound, }\DataTypeTok{to =}\NormalTok{ upper_bound, }\DataTypeTok{length.out =}\NormalTok{ num_breaks)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{c-1}{%
+\subsubsection{2c)}\label{c-1}}
+
+With the break positions defined, we can discretize
+\texttt{Sepal.Length} into bins via the \texttt{cut()} function. To
+learn about \texttt{cut()}, type \texttt{?cut} into the R console in
+order to bring up the documentation. As the help page says,
+\texttt{cut()} divides a numeric variable into discrete bins and
+converts the result the a factor. The bin ``edges'' are based on the
+values specified by the \texttt{breaks} argument to the \texttt{cut()}
+function. We will practice working with \texttt{cut()} first, before
+applying it to the \texttt{Sepal.Length} variable within the
+\texttt{iris} dataset.
+
+\hypertarget{problem-8}{%
+\paragraph{PROBLEM}\label{problem-8}}
+
+\textbf{In the code chunk below, assign the sequential integers
+\texttt{0} through \texttt{11} to the variable \texttt{x\_dbl} using the
+\texttt{:} notation. Then pass \texttt{x\_dbl} to the \texttt{cut()}
+function and specify the breaks to be 0, 5, and 11 by creating a vector
+containing just those three values. Assign the result of the
+\texttt{cut()} function to the variable \texttt{x\_factor}. Check the
+data type associated with \texttt{x\_factor}, and then print the
+\texttt{x\_factor} variable to the screen.}
+
+\hypertarget{solution-7}{%
+\paragraph{SOLUTION}\label{solution-7}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x_dbl <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\DecValTok{11} \CommentTok{### create vector 0 to 11}
+  
+\NormalTok{x_factor <-}\StringTok{ }\KeywordTok{cut}\NormalTok{(x_dbl, }\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{11}\NormalTok{)) }\CommentTok{### set the breaks argument}
+
+\KeywordTok{class}\NormalTok{(x_factor)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "factor"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x_factor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] <NA>   (0,5]  (0,5]  (0,5]  (0,5]  (0,5]  (5,11] (5,11] (5,11] (5,11]
+## [11] (5,11] (5,11]
+## Levels: (0,5] (5,11]
+\end{verbatim}
+
+\hypertarget{d-1}{%
+\subsubsection{2d)}\label{d-1}}
+
+The unique values associated with a factor variable are displayed in the
+line below the individual elements of the vector. In \texttt{R}
+nomenclature, factor unique values are referred to as ``levels''. In
+your answer to Problem 2c) however, you should notice that the first
+printed element reads \texttt{\textless{}NA\textgreater{}}. That's
+because the discretized intervals are setup to be (, {]} (which reads as
+``from but excluding lower value, to and including upper value''). We
+can modify this structure to include the lowest (minimum) value in the
+dataset by setting \texttt{include.lowest\ =\ TRUE} in the call to the
+\texttt{cut()} function.
+
+\hypertarget{problem-9}{%
+\paragraph{PROBLEM}\label{problem-9}}
+
+\textbf{Reperform the \texttt{cut()} call on \texttt{x\_dbl}, but this
+time set \texttt{include.lowest\ =\ TRUE}. Assign the result to the
+vector \texttt{x\_factor\_2} and then print the result to the screen.}
+
+\hypertarget{solution-8}{%
+\paragraph{SOLUTION}\label{solution-8}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x_factor_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{cut}\NormalTok{(x_dbl, }\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{11}\NormalTok{), }\DataTypeTok{include.lowest =} \OtherTok{TRUE}\NormalTok{) }\CommentTok{### set the breaks and add the new argument}
+
+\NormalTok{x_factor_}\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] [0,5]  [0,5]  [0,5]  [0,5]  [0,5]  [0,5]  (5,11] (5,11] (5,11] (5,11]
+## [11] (5,11] (5,11]
+## Levels: [0,5] (5,11]
+\end{verbatim}
+
+\hypertarget{e-1}{%
+\subsubsection{2e)}\label{e-1}}
+
+We will now modify the \texttt{iris} dataset by discretizing
+\texttt{Sepal.Length} via the \texttt{cut()} function. We will use the
+\texttt{dplyr::mutate()} ``action verb'' to execute this task. As the
+function name suggests, \texttt{mutate()} modifies the dataset by
+creating new variables. The generic syntax is
+\texttt{mutate(\textless{}new\ variable\textgreater{}\ =\ \textless{}set\ of\ actions\textgreater{})}.
+We can perform simple actions to create a new variable, or execute a
+complex set of tasks. \texttt{dplyr::mutate()} is a general ``wrapper''
+for performing those operations.
+
+\hypertarget{problem-10}{%
+\paragraph{PROBLEM}\label{problem-10}}
+
+\textbf{Create the new discretized variable,
+\texttt{sepal\_length\_bin}, by setting the \texttt{breaks} argument
+within the cut function to be \texttt{hist\_breaks} and set the
+\texttt{include.lowest} argument to be \texttt{TRUE}. Assign the
+modified dataset to the variable \texttt{my\_iris}.}
+
+\hypertarget{solution-9}{%
+\paragraph{SOLUTION}\label{solution-9}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{my_iris <-}\StringTok{ }\NormalTok{iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sepal_length_bin =} \KeywordTok{cut}\NormalTok{(iris}\OperatorTok{$}\NormalTok{Sepal.Length, }\DataTypeTok{breaks =}\NormalTok{ hist_breaks, }\DataTypeTok{include.lowest =} \OtherTok{TRUE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{problem-3-1}{%
+\subsection{Problem 3}\label{problem-3-1}}
+
+Our new dataset, \texttt{my\_iris}, contains an additional variable
+compared to the ``base'' \texttt{iris}. We will now practice
+manipulating the dataset based on grouping with this new variable.
+
+\hypertarget{a-2}{%
+\subsubsection{3a)}\label{a-2}}
+
+Let's get an overview of the newly created variable,
+\texttt{sepal\_length\_bin}.
+
+\hypertarget{problem-11}{%
+\paragraph{PROBLEM}\label{problem-11}}
+
+\textbf{Use the \texttt{select()} action verb to isolate the
+\texttt{sepal\_length\_bin} variable from the other variables and pipe
+the result to the \texttt{summary()} function.}
+
+\hypertarget{solution-10}{%
+\paragraph{SOLUTION}\label{solution-10}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{select}\NormalTok{(my_iris, }\StringTok{'sepal_length_bin'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summary}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     sepal_length_bin
+##  [4.2,4.87] :16     
+##  (4.87,5.53]:43     
+##  (5.53,6.2] :36     
+##  (6.2,6.87] :38     
+##  (6.87,7.53]:11     
+##  (7.53,8.2] : 6
+\end{verbatim}
+
+\hypertarget{b-2}{%
+\subsubsection{3b)}\label{b-2}}
+
+Because \texttt{sepal\_length\_bin} is a factor variable, we can easily
+get the unique values (levels) with the \texttt{levels()} function.
+
+\hypertarget{problem-12}{%
+\paragraph{PROBLEM}\label{problem-12}}
+
+\textbf{Pass the \texttt{sepal\_length\_bin} vector into the
+\texttt{levels()} function, by accessing it with the \texttt{\$}
+operator from within \texttt{my\_iris}.}
+
+\hypertarget{solution-11}{%
+\paragraph{SOLUTION}\label{solution-11}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{levels}\NormalTok{(my_iris}\OperatorTok{$}\NormalTok{sepal_length_bin)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "[4.2,4.87]"  "(4.87,5.53]" "(5.53,6.2]"  "(6.2,6.87]"  "(6.87,7.53]"
+## [6] "(7.53,8.2]"
+\end{verbatim}
+
+\hypertarget{c-2}{%
+\subsubsection{3c)}\label{c-2}}
+
+In general, we can use the \texttt{unique()} function to identify the
+unique values contained within a vector irregardless of whether that
+vector is a \texttt{"numeric"}, \texttt{"character"}, or a factor
+variable. There are several important differences between factor levels
+and unique values, but we will not be too concerned with those
+differences at the moment.
+
+\hypertarget{problem-13}{%
+\paragraph{PROBLEM}\label{problem-13}}
+
+\textbf{Call \texttt{unique()} on \texttt{sepal\_length\_bin} by
+accessing the variable with the \texttt{\$} operator again.}
+
+\hypertarget{solution-12}{%
+\paragraph{SOLUTION}\label{solution-12}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{unique}\NormalTok{(my_iris}\OperatorTok{$}\NormalTok{sepal_length_bin)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] (4.87,5.53] [4.2,4.87]  (5.53,6.2]  (6.87,7.53] (6.2,6.87]  (7.53,8.2] 
+## 6 Levels: [4.2,4.87] (4.87,5.53] (5.53,6.2] (6.2,6.87] ... (7.53,8.2]
+\end{verbatim}
+
+\hypertarget{d-2}{%
+\subsubsection{3d)}\label{d-2}}
+
+As you should have seen in the previous set of results, the
+\texttt{levels()} and \texttt{unique()} functions return vectors.
+However, if we use the \texttt{dplyr} function \texttt{distinct()}, we
+will return a \texttt{data.frame} containing the unique values
+associated with the variable(s). We tell \texttt{distinct} which
+variable(s) to focus on using non-standard evaluation.
+
+\hypertarget{problem-14}{%
+\paragraph{PROBLEM}\label{problem-14}}
+
+\textbf{In the code chunk below, pipe \texttt{my\_iris} to the
+\texttt{distinct()} function and specify the variable to be
+\texttt{sepal\_length\_bin}.}
+
+\hypertarget{solution-13}{%
+\paragraph{SOLUTION}\label{solution-13}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{(sepal_length_bin)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{e-2}{%
+\subsubsection{3e)}\label{e-2}}
+
+\texttt{distinct()} is a useful function, but it does not provide any
+other information about the variables. The \texttt{count()} function,
+however, returns the number of rows asssociated with each unique value.
+The number of rows (or the count) are stored in an automatically created
+additional column named \texttt{n}.
+
+\hypertarget{problem-15}{%
+\paragraph{PROBLEM}\label{problem-15}}
+
+\textbf{In the code chunk below, apply the \texttt{count()} function
+instead of the \texttt{distinct()} function to the
+\texttt{sepal\_length\_bin} variable.}
+
+\hypertarget{solution-14}{%
+\paragraph{SOLUTION}\label{solution-14}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{### your code here}
+\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(sepal_length_bin)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   sepal_length_bin     n
+##   <fct>            <int>
+## 1 [4.2,4.87]          16
+## 2 (4.87,5.53]         43
+## 3 (5.53,6.2]          36
+## 4 (6.2,6.87]          38
+## 5 (6.87,7.53]         11
+## 6 (7.53,8.2]           6
+\end{verbatim}
+
+\hypertarget{f}{%
+\subsubsection{3f)}\label{f}}
+
+We have sufficient information with the \texttt{count()} function result
+to make a bar graph in the style of the histogram we are interested in.
+
+\hypertarget{problem-16}{%
+\paragraph{PROBLEM}\label{problem-16}}
+
+\textbf{Pipe the result of the \texttt{count()} function into the
+\texttt{ggplot()} function. Set the \texttt{x} and \texttt{y} aesthetics
+to be \texttt{sepal\_length\_bin} and \texttt{n}, respectively. Then
+call \texttt{geom\_bar()}. However, by default \texttt{geom\_bar()} will
+not work with this setup. As with \texttt{geom\_histogram()},
+\texttt{geom\_bar()} performs a grouping and counting operations behind
+the scenes. To override this default behavior, we must modify the
+\texttt{stat} argument to be \texttt{stat\ =\ "identity"}. The code
+chunk below already has the correct \texttt{geom\_bar()} call. Fill in
+the missing code to create the visualization of interest.}
+
+\hypertarget{solution-15}{%
+\paragraph{SOLUTION}\label{solution-15}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{### complete the ggplot call below}
+\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{count}\NormalTok{(sepal_length_bin) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sepal_length_bin, }\DataTypeTok{y =}\NormalTok{ n)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_03f-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \CommentTok{#n() function returns the number observations of the current group}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{g}{%
+\subsubsection{3g)}\label{g}}
+
+The resulting bar graph in Problem 3f) looks different from the
+histogram visualized in Problem 1).
+
+\hypertarget{problem-17}{%
+\paragraph{PROBLEM}\label{problem-17}}
+
+\textbf{Why is the x-axis setup differently from the histogram in
+Problem 1)?}
+
+\hypertarget{solution-16}{%
+\paragraph{SOLUTION}\label{solution-16}}
+
+Here we map the sepal\_length\_bin to the x-axis. `sepal\_length\_bin'
+was created by cut() function with 3 breakpoints, generating four
+possible values. Since we didn't set a arbitrary bin count, naturally we
+will have 4 intervals, as in 4 bins in our 3f) histogram.
+
+In problem 1, we map the Sepal.length to the x-axis, which has more
+unique values than sepal\_length\_bin. Also, we set the bin count to an
+arbitrary number. Thus, the x-axes of the histograms look differently in
+these two problems.
+
+\hypertarget{problem-4-1}{%
+\subsection{Problem 4}\label{problem-4-1}}
+
+The \texttt{count()} function is useful for quickly grouping and
+counting by one or multiple variables. However, that is all the function
+is intended to do. In order to perform other calculations we need to use
+the \texttt{group\_by()} function in conjunction with a function like
+\texttt{summarize()}. In this problem, you will learn about these very
+useful and important operations.
+
+\hypertarget{a-3}{%
+\subsubsection{4a)}\label{a-3}}
+
+The grouping variables are specified using non-standard evaluation in
+the \texttt{group\_by()} call. Thus, to group by a variable use the
+following syntax:
+\texttt{group\_by(\textless{}variable\ name\textgreater{})}. Grouping by
+3 variables is just a straight forward extension of this:
+\texttt{group\_by(\textless{}variable\ 1\textgreater{},\ \textless{}variable\ 2\textgreater{},\ \textless{}variable\ 3\textgreater{})}.
+
+\hypertarget{problem-18}{%
+\paragraph{PROBLEM}\label{problem-18}}
+
+\textbf{Pipe \texttt{my\_iris} into the \texttt{group\_by()} function
+and specify the grouping variable to be \texttt{sepal\_length\_bin}.}
+
+\hypertarget{solution-17}{%
+\paragraph{SOLUTION}\label{solution-17}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(sepal_length_bin) }\CommentTok{#grouping doesn't change how data looks}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 150 x 6
+## # Groups:   sepal_length_bin [6]
+##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species sepal_length_bin
+##           <dbl>       <dbl>        <dbl>       <dbl> <fct>   <fct>           
+##  1          5.1         3.5          1.4         0.2 setosa  (4.87,5.53]     
+##  2          4.9         3            1.4         0.2 setosa  (4.87,5.53]     
+##  3          4.7         3.2          1.3         0.2 setosa  [4.2,4.87]      
+##  4          4.6         3.1          1.5         0.2 setosa  [4.2,4.87]      
+##  5          5           3.6          1.4         0.2 setosa  (4.87,5.53]     
+##  6          5.4         3.9          1.7         0.4 setosa  (4.87,5.53]     
+##  7          4.6         3.4          1.4         0.3 setosa  [4.2,4.87]      
+##  8          5           3.4          1.5         0.2 setosa  (4.87,5.53]     
+##  9          4.4         2.9          1.4         0.2 setosa  [4.2,4.87]      
+## 10          4.9         3.1          1.5         0.1 setosa  (4.87,5.53]     
+## # ... with 140 more rows
+\end{verbatim}
+
+\hypertarget{b-3}{%
+\subsubsection{4b)}\label{b-3}}
+
+The result after applying the grouping operation appears to be just the
+original dataset. However, this new dataset ``knows'' the grouping
+structure. Thus, any additional operations we apply will be applied to
+the grouped dataset. When we wish to summarize based on the grouping
+structure, we pipe the \texttt{group\_by()} result into the
+\texttt{summarize()} function. Calculations within the
+\texttt{summarize()} function are performed with syntax like we used
+with the \texttt{mutate()} function.
+
+The code chunk below shows how the number of observations per
+\texttt{sepal\_length\_bin} value are computed using the \texttt{n()}
+function within the \texttt{summarize()} call.
+
+\hypertarget{problem-19}{%
+\paragraph{PROBLEM}\label{problem-19}}
+
+\textbf{Complete the code chunk below by naming this summary variable
+\texttt{num\_obs}. How do the resulting counts compare with the result
+from \texttt{count()}?}
+
+\emph{Note}: the \texttt{n()} function is an example of a function
+without any input arguments. The syntax for calling such a function
+still requires the \texttt{()} after the function name. This syntax
+instructs the \texttt{R} interpreter that you are using a function named
+\texttt{n} and not a variable named \texttt{n}.
+
+\hypertarget{solution-18}{%
+\paragraph{SOLUTION}\label{solution-18}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(sepal_length_bin) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{( }\DataTypeTok{num_obs =} \KeywordTok{n}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 2
+##   sepal_length_bin num_obs
+##   <fct>              <int>
+## 1 [4.2,4.87]            16
+## 2 (4.87,5.53]           43
+## 3 (5.53,6.2]            36
+## 4 (6.2,6.87]            38
+## 5 (6.87,7.53]           11
+## 6 (7.53,8.2]             6
+\end{verbatim}
+
+The n() function gets the same result as the count() function. The
+difference between the two is simply how we format them. n() can only be
+used in certain dplyr functions like summarise(), which returns the
+number of observation in each group. If we want to achieve the same
+result with count(), we simply pipe the result of the group\_by() to the
+count() function.
+
+\hypertarget{c-3}{%
+\subsubsection{4c)}\label{c-3}}
+
+We can do more than just counting in the \texttt{summarize()} call. We
+can calculate averages, standard deviations, quantiles, and even call
+complex modeling functions. Think of \texttt{summarize()} as a versatile
+wrapper function for controlling operations applied to a grouped
+dataset.
+
+\hypertarget{problem-20}{%
+\paragraph{PROBLEM}\label{problem-20}}
+
+\textbf{Complete the code chunk below to calculate the average, minimum,
+and maximum \texttt{Sepal.Length} values for each
+\texttt{sepal\_length\_bin} level. In \texttt{R}, the average is
+calculated with the \texttt{mean()} function. The minimum and maximum
+values are calculated with the \texttt{min()} and \texttt{max()}
+functions, respectively. The grouped and summarized dataset has been
+named \texttt{iris\_group} and is printed to the screen for review.}
+
+\hypertarget{solution-19}{%
+\paragraph{SOLUTION}\label{solution-19}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris_group <-}\StringTok{ }\NormalTok{my_iris }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(sepal_length_bin) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{num_obs =} \KeywordTok{n}\NormalTok{(),}
+            \DataTypeTok{avg_sepal_length =} \KeywordTok{mean}\NormalTok{(Sepal.Length),}
+            \DataTypeTok{min_sepal_length =} \KeywordTok{min}\NormalTok{(Sepal.Length),}
+            \DataTypeTok{max_sepal_length =} \KeywordTok{max}\NormalTok{(Sepal.Length))}
+
+\NormalTok{iris_group}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 5
+##   sepal_length_bin num_obs avg_sepal_length min_sepal_length max_sepal_length
+##   <fct>              <int>            <dbl>            <dbl>            <dbl>
+## 1 [4.2,4.87]            16             4.61              4.3              4.8
+## 2 (4.87,5.53]           43             5.17              4.9              5.5
+## 3 (5.53,6.2]            36             5.84              5.6              6.1
+## 4 (6.2,6.87]            38             6.47              6.2              6.8
+## 5 (6.87,7.53]           11             7.09              6.9              7.4
+## 6 (7.53,8.2]             6             7.72              7.6              7.9
+\end{verbatim}
+
+\hypertarget{d-3}{%
+\subsubsection{4d)}\label{d-3}}
+
+We can use the grouped and summarized dataset to create a simple
+histogram which introduces the \texttt{geom\_point()} and
+\texttt{geom\_linerange()} geoms. \texttt{geom\_point()} creates a basic
+scatter plot between two variables mapped to the \texttt{x} and
+\texttt{y} aesthetics.
+
+\hypertarget{problem-21}{%
+\paragraph{PROBLEM}\label{problem-21}}
+
+\textbf{In the code chunk below, assign \texttt{avg\_sepal\_length} to
+the \texttt{x} aesthetic within the parent \texttt{ggplot()} call. Then,
+set \texttt{num\_obs} to the \texttt{y} aesthetic within the
+\texttt{geom\_point()} call. Lastly, assign the \texttt{size} argument
+within \texttt{geom\_point()} to be 4.}
+
+\hypertarget{solution-20}{%
+\paragraph{SOLUTION}\label{solution-20}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris_group }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ avg_sepal_length)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ num_obs),}
+             \DataTypeTok{size =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_04d-1.pdf}
+
+\hypertarget{e-3}{%
+\subsubsection{4e)}\label{e-3}}
+
+A scatter plot can be very useful graphic, but it can be difficult to
+visualize the distribution shape we are trying to represent in this
+example. To aid in that visualization, we will add vertical lines to our
+graphic via the \texttt{geom\_linerange()} function. In
+\texttt{geom\_linerange()} we must specify an \texttt{x} aesthetic and
+two separate y-axis aesthetics, \texttt{ymin} and \texttt{ymax}. As
+their names suggest, \texttt{ymin} displays the minimum value on the
+y-axis and \texttt{ymax} shows the maximum value on the y-axis.
+\texttt{geom\_linerange()} then draws a vertical line connecting the
+y-axis aesthetics. Since we want to use the vertical lines to represent
+a histogram, set \texttt{ymin} to be 0 and \texttt{ymax} to equal
+\texttt{num\_obs}. Thus, a vertical line will provide a comparable
+visualization as the bar chart from Problem 3.
+
+\hypertarget{problem-22}{%
+\paragraph{PROBLEM}\label{problem-22}}
+
+\textbf{Complete the code chunk below by correctly assigning the y-axis
+aesthetics.}
+
+\emph{Note}: this style of figure is sometimes referred to as a stem
+plot. They are useful in certain contexts, but when creating histograms
+I prefer the default ggplot2 \texttt{geom\_histogram()} or
+\texttt{geom\_freqpoly()} style. We used the stem plot in this problem
+to introduce additional geoms and to continue demonstrating the
+\texttt{group\_by()} and \texttt{summarize()} functions.
+
+\hypertarget{solution-21}{%
+\paragraph{SOLUTION}\label{solution-21}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris_group }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ avg_sepal_length)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_linerange}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin =} \DecValTok{0}\NormalTok{,}
+                               \DataTypeTok{ymax =}\NormalTok{ num_obs)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ num_obs),}
+             \DataTypeTok{size =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_04e-1.pdf}
+
+\hypertarget{f-1}{%
+\subsubsection{4f)}\label{f-1}}
+
+Let's now compare our manual histogram to ggplot's histogram. Our stem
+plot simplified histogram visualized the counts at the average
+\texttt{Sepal.Length} value within each bin. \texttt{geom\_freqpoly()}
+plots the counts at the bin midpoint. Thus, assuming the bin center and
+the (empirical) average within a bin are similar, we should have an
+``apples-to-apples'' comparison between \texttt{geom\_freqpoly()} and
+our stem plot.
+
+The graphic we wish to make does not just contain multiple layers but
+multiple datasets! The reason why is because we have to allow
+\texttt{geom\_freqpoly()} to operate on the original non-grouped and
+non-summarized dataset. We can override the data associated with a geom
+by supplying an alternative dataset to the \texttt{data} argument. In
+this way, we can create complex figures which make use of various
+datasets.
+
+\hypertarget{problem-23}{%
+\paragraph{PROBLEM}\label{problem-23}}
+
+\textbf{Complete the code chunk below by setting the \texttt{data}
+argument to \texttt{geom\_freqpoly()} to be \texttt{my\_iris}. Specify
+the appropriate variable to the \texttt{x} aesthetic within the
+\texttt{geom\_freqpoly()} call. Assess how well our manual histogram
+performed relative to the native ggplot histogram. Were we close? What
+are the differences?}
+
+\hypertarget{solution-22}{%
+\paragraph{SOLUTION}\label{solution-22}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{iris_group }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ avg_sepal_length)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_freqpoly}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ my_iris,}
+                \DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{Sepal.Length),}
+                \DataTypeTok{bins =} \DecValTok{6}\NormalTok{, }\DataTypeTok{color =} \StringTok{"red"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{1.15}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_linerange}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{ymin =} \DecValTok{0}\NormalTok{,}
+                               \DataTypeTok{ymax =}\NormalTok{ num_obs)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ num_obs),}
+             \DataTypeTok{size =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_04f_a-1.pdf}
+
+Our histogram shows the increases and decreases of the number of
+observations. The change in the frequency of the data might not be clear
+in the native historgram. With the line segments in the histogram, we
+can more easily envision the distrbution of the data set. On the other
+hand, in the native histogram, many outliers and the uneven bars hinders
+our ability to make sense of the distribution.
+
+Additionally, the average lengths that have the highest frequencies are
+shown, in the native histogram we can hardly tell what where mode of the
+distribution is.
+
+\hypertarget{problem-5-1}{%
+\subsection{Problem 5}\label{problem-5-1}}
+
+So far, we have used several different types of geometric objects. In
+this problem, we will introduce another very important geom, the
+boxplot, which provides a quick visual display of useful summary
+statistics for continuous variables (\texttt{"numeric"}s). Compared with
+the histogram which focuses on displaying the \emph{shape} of the
+distribution, the boxplot allows us to visually relate the median with
+the 25th and 75th quantiles, as well as outliers. We get an idea about
+the central tendency of the variable, as well as a rough guide on the
+``meaningful'' range.
+
+To demonstrate the usefulness of the boxplot, we will use the
+\texttt{diamonds} dataset from \texttt{ggplot2}.
+
+\hypertarget{a-4}{%
+\subsubsection{5a)}\label{a-4}}
+
+\hypertarget{problem-24}{%
+\paragraph{PROBLEM}\label{problem-24}}
+
+\textbf{Pipe \texttt{diamonds} into the \texttt{glimpse()} function to
+display the dimensions and datatypes associated with the variables
+within the dataset.}
+
+\hypertarget{solution-23}{%
+\paragraph{SOLUTION}\label{solution-23}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}\StringTok{ }\KeywordTok{glimpse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Observations: 53,940
+## Variables: 10
+## $ carat   <dbl> 0.23, 0.21, 0.23, 0.29, 0.31, 0.24, 0.24, 0.26, 0.22, 0.23,...
+## $ cut     <ord> Ideal, Premium, Good, Premium, Good, Very Good, Very Good, ...
+## $ color   <ord> E, E, E, I, J, J, I, H, E, H, J, J, F, J, E, E, I, J, J, J,...
+## $ clarity <ord> SI2, SI1, VS1, VS2, SI2, VVS2, VVS1, SI1, VS2, VS1, SI1, VS...
+## $ depth   <dbl> 61.5, 59.8, 56.9, 62.4, 63.3, 62.8, 62.3, 61.9, 65.1, 59.4,...
+## $ table   <dbl> 55, 61, 65, 58, 58, 57, 57, 55, 61, 61, 55, 56, 61, 54, 62,...
+## $ price   <int> 326, 326, 327, 334, 335, 336, 336, 337, 337, 338, 339, 340,...
+## $ x       <dbl> 3.95, 3.89, 4.05, 4.20, 4.34, 3.94, 3.95, 4.07, 3.87, 4.00,...
+## $ y       <dbl> 3.98, 3.84, 4.07, 4.23, 4.35, 3.96, 3.98, 4.11, 3.78, 4.05,...
+## $ z       <dbl> 2.43, 2.31, 2.31, 2.63, 2.75, 2.48, 2.47, 2.53, 2.49, 2.39,...
+\end{verbatim}
+
+\hypertarget{b-4}{%
+\subsubsection{5b)}\label{b-4}}
+
+The variable \texttt{price} gives the cost of a diamond in US dollars,
+while the other variables provide attributes associated with a diamond.
+A natural question to ask then is: \emph{What variables influence the
+price?} If you have purchased a diamond before, you may have heard about
+the ``4 C's'': cut, color, clarity, and carat. We will explore the
+behavior of \texttt{price} with respect to these 4 variables.
+
+The first three of these are all factors (the \texttt{"ord"} data type
+is a special ordered factor which as the name states has a natural
+ordering of the categorical levels) within the \texttt{diamonds}
+dataset, while \texttt{carat} is a \texttt{"numeric"} variable. With a
+boxplot, we group a continuous variable based on a categorical variable,
+and display summary statistics associated with the continuous variable
+for each categorical level. Therefore, the boxplot geom is another
+geometric object which performs multiple operations behind the scenes.
+If you have not worked boxplots before, I recommend Chapter 7 of the
+\href{https://r4ds.had.co.nz/}{R for Data Science} book.
+
+Let's start by visualizing the relationship between \texttt{price} and
+\texttt{color}.
+
+\hypertarget{problem-25}{%
+\paragraph{PROBLEM}\label{problem-25}}
+
+\textbf{Pipe \texttt{diamonds} into \texttt{ggplot()} and set the
+\texttt{x} and \texttt{y} aesthetics to \texttt{color} and
+\texttt{price}, respectively. Then, call \texttt{geom\_boxplot()}. What
+conclusion would you draw based on the resulting figure?}
+
+\hypertarget{solution-24}{%
+\paragraph{SOLUTION}\label{solution-24}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ color, }\DataTypeTok{y =}\NormalTok{ price)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_05b-1.pdf}
+
+Discuss your conclusions here.
+
+\hypertarget{c-4}{%
+\subsubsection{5c)}\label{c-4}}
+
+Next, we will include the influence of the \texttt{cut} variable
+breaking up the graphic into separate subplots based on the levels of
+\texttt{cut}.
+
+\hypertarget{problem-26}{%
+\paragraph{PROBLEM}\label{problem-26}}
+
+\textbf{Add the \texttt{facet\_wrap()} call to the code from Problem
+5b), and set the facetting variable to be \texttt{cut}.}
+
+\hypertarget{solution-25}{%
+\paragraph{SOLUTION}\label{solution-25}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ color, }\DataTypeTok{y =}\NormalTok{ price)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\StringTok{ }\NormalTok{cut)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_05c-1.pdf}
+
+\hypertarget{d-4}{%
+\subsubsection{5d)}\label{d-4}}
+
+In addition to the \texttt{facet\_wrap()} function, we can create
+subplots with the \texttt{facet\_grid()} function. As the name suggests,
+\texttt{facet\_grid()} creates a 2D grid layout where each subplot
+corresponds to a combination of two facetting variables. As with
+\texttt{facet\_wrap()}, the syntax uses the formula interface:
+\texttt{facet\_grid(\textless{}vertical\ variable\textgreater{}\ \textasciitilde{}\ \textless{}horizontal\ variable\textgreater{})}.
+The variable provided to the left of the \texttt{\textasciitilde{}}
+varies top-to-bottom (vertically), while the variable to the right of
+the \texttt{\textasciitilde{}} changes left-to-right (horizontally).
+
+\hypertarget{problem-27}{%
+\paragraph{PROBLEM}\label{problem-27}}
+
+\textbf{To see how this works, use \texttt{facet\_grid()} instead of
+\texttt{facet\_wrap()} and set the facetting variables to be
+\texttt{clarity} and \texttt{cut} for the vertical and horizontal
+directions, respectively.}
+
+\hypertarget{solution-26}{%
+\paragraph{SOLUTION}\label{solution-26}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ color, }\DataTypeTok{y =}\NormalTok{ price)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(clarity }\OperatorTok{~}\StringTok{ }\NormalTok{cut)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_05d-1.pdf}
+
+\hypertarget{e-4}{%
+\subsubsection{5e)}\label{e-4}}
+
+The resulting figure in Problem 5d) includes 3 out of the 4 C's. The
+remaining variable, \texttt{carat}, is not categorical. To include
+\texttt{carat} in our figure, let's discretize it and compare two
+boxplots side-by-side at each \texttt{color} level within each
+\texttt{clarity} and \texttt{cut} subplot combination. For now, we will
+keep things simple and break up \texttt{carat} based on if an
+observation has a value greater than the median \texttt{carat} value.
+
+\hypertarget{problem-28}{%
+\paragraph{PROBLEM}\label{problem-28}}
+
+\textbf{Within the \texttt{geom\_boxplot()} function, set the
+\texttt{fill} aesthetic to be a conditional test:
+\texttt{carat\ \textgreater{}\ median(carat)}. As shown in the
+supplemental reading material, use the \texttt{theme()} function to move
+the legend position to the top of the graphic.}
+
+\emph{Note}: It might be difficult to see everything within the graphic
+window dispalyed in the result after the code chunk, when working within
+the .Rmd file in the RStudio IDE. You can zoom in by clicking on the
+``Show in New Window'' icon which is displayed as the small ``arrow over
+paper'' icon to the right hand size of the output portion.
+Alternatively, the figure dimensions can be modified by the code chunk
+parameters \texttt{fig.width} and \texttt{fig.height}. \textbf{For this
+assignment, it is ok to use the default figure dimensions.}
+
+\hypertarget{solution-27}{%
+\paragraph{SOLUTION}\label{solution-27}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ color, }\DataTypeTok{y =}\NormalTok{ price)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ carat }\OperatorTok{>}\StringTok{ }\KeywordTok{median}\NormalTok{(carat))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(clarity }\OperatorTok{~}\StringTok{ }\NormalTok{cut) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{'top'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_05e-1.pdf}
+
+\hypertarget{f-2}{%
+\subsubsection{5f)}\label{f-2}}
+
+Due to the large number of subplots, the individual facets are quite
+small with the default figure size. Let's focus on the case with
+\texttt{cut\ ==\ "Ideal"} and \texttt{clarity\ ==\ "IF"} by calling
+\texttt{filter()} before piping the dataset into the \texttt{ggplot()}.
+
+\hypertarget{problem-29}{%
+\paragraph{PROBLEM}\label{problem-29}}
+
+\textbf{Pipe \texttt{diamonds} into \texttt{filter()} and perform the
+necessary operation. Pipe the resulting dataset into the same
+\texttt{ggplot2} function calls used in Problem 5e), except for one
+important change. The \texttt{filter()} call will reduce the dataset,
+and thus our conditional test will be comparing \texttt{carat} to the
+median value associated with the smaller dataset. To force the
+conditional test to still be applied to the median based on the complete
+dataset use \texttt{median(diamonds\$carat)} within the conditional test
+instead of \texttt{median(carat)}.}
+
+\hypertarget{solution-28}{%
+\paragraph{SOLUTION}\label{solution-28}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diamonds }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(cut }\OperatorTok{==}\StringTok{ 'Ideal'}\NormalTok{, clarity }\OperatorTok{==}\StringTok{ 'IF'}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ color, }\DataTypeTok{y =}\NormalTok{ price)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{mapping =} \KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ carat }\OperatorTok{>}\StringTok{ }\KeywordTok{median}\NormalTok{(diamonds}\OperatorTok{$}\NormalTok{carat))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_grid}\NormalTok{(clarity }\OperatorTok{~}\StringTok{ }\NormalTok{cut) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{'top'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW_template_01_files/figure-latex/solution_05f-1.pdf}
+
+\hypertarget{g-1}{%
+\subsubsection{5g)}\label{g-1}}
+
+\hypertarget{problem-30}{%
+\paragraph{PROBLEM}\label{problem-30}}
+
+\textbf{Discuss the differences between the trends shown in the
+resulting figure in Problem 5f) with the trends shown in the figure in
+Problem 5b).}
+
+\hypertarget{solution-29}{%
+\paragraph{SOLUTION}\label{solution-29}}
+
+The trend shown in 5b mainly shows us how color affects the price of a
+diamond. Yet according to the box plot in 5b, color is not a dominant
+factor of price. All 7 color have similar price ranges. 5f on the other
+hand, shows us that the real determinant factor of price is carat,
+specifically as in IF cut. As it clearly shows that diamonds that have
+less carats are significant cheaper than those with more carats.
+
+\hypertarget{problem-6-1}{%
+\subsection{Problem 6}\label{problem-6-1}}
+
+We can create LaTeX style math expressions within R Markdown. To get
+more comfortable writing these type of expressions, we will work
+examples similar to those discussed in the calculus review in the first
+week of lecture.
+
+\hypertarget{quick-introduction-to-latex}{%
+\paragraph{Quick introduction to
+LaTeX}\label{quick-introduction-to-latex}}
+
+In R Markdown, math notation and expressions can be displayed inline by
+typing expressions between dollar signs. For example, typing
+\texttt{\$x\$} displays \(x\) in the rendered document. If we instead
+want to display a bold face variable (to represent a vector) we will
+need to include the LaTeX style function
+\texttt{\textbackslash{}mathbf()} between the dollar signs. Thus, typing
+\texttt{\$\textbackslash{}mathbf\{x\}\$} renders \(\mathbf{x}\) in the
+document.
+
+LaTeX style expressions provide a lot of flexibility and enable us to
+write out expressions just like we would on paper. To show a subscript
+``attached'' or ``associated'' with variable such as \(x_1\), you must
+use the underscore character \texttt{\_} next to that variable. Thus,
+type \texttt{\$x\_1\$} to display \(x_1\). If you have a relatively
+complicated expression you want to show within the subscript, you can
+wrap curly braces \texttt{\{\}} around the subscript expression. For
+example to display \(x_{i,j,k,l}\) simply type
+\texttt{\$x\_\{i,j,k,l\}\$}.
+
+Superscripts, such as \(x^2\), are displayed with the \texttt{\^{}}
+operator. Thus, to show the square of the variable \(x\), type
+\texttt{\$x\^{}2\$}. As with subscripts, you can wrap complicated
+expressions within curly braces. To show \(x^{t+2}\), type
+\texttt{\$x\^{}\{t+2\}\$}. Subscripts and superscripts can also be
+combined together, such as with \(x_{n}^{2}\). When combining subscripts
+and superscripts, it's recommended to wrap each expression within curly
+braces, even if the expression is simple. Therefore, to display
+\(x_{n}^{2}\), type \texttt{\$x\_\{n\}\^{}\{2\}\$}.
+
+We can display variables and complete expressions within parentheses,
+such as \(\left(x+a\right)\), several different ways. First, you can
+simply type \texttt{\$(x\ +\ a)\$} which produces \((x + a)\). Another
+option though is to use the following commands
+\texttt{\$\textbackslash{}left(\ x\ +\ a\ \textbackslash{}right)\$}
+which also produces \(\left( x + a \right)\). At first glance these seem
+to be the same, but the
+\texttt{\textbackslash{}left(\ \textbackslash{}right)} commands allow
+the parantheses to be dynamically sized around the expression they
+contain. For more information on different types of brackets and
+parantheses, please see the following reference from
+\href{https://www.overleaf.com/learn/latex/Brackets_and_Parentheses}{Overleaf}.
+
+We can also display equations within ``equation blocks'' using two
+dollar signs to surround the expression of interest. The equation within
+the block is rendered beneath text in the rendered report. We can thus
+draw special focus to mathematical equations and expressions displayed
+this way.
+
+As an example, consider a function of two variables, \(x_1\) and
+\(x_2\), shown in the equation block below:
+
+\[ 
+f\left(x_1, x_2 \right) = a x_{1}^{b} + c x_{2}^{d}
+\]
+
+To create the above equation, type the following:
+
+\texttt{\$\$\ f\textbackslash{}left(x\_1,\ x\_2\ \textbackslash{}right)\ =\ a\ x\_\{1\}\^{}\{b\}\ +\ c\ x\_\{2\}\^{}\{d\}\ \$\$}
+
+Reading the un-rendered LaTeX expression may seem daunting at first, and
+getting used to working with LaTeX math coding can be challenging.
+However, please note that the above expression combines each of the
+previously described elements together. Each individual element, such as
+a subscript or superscript is relatively straight forward. Thus, when
+starting out with LaTeX, break a complicated expression into separate
+components or elements. Get those elements correct, and then
+``assemble'' them into the final expression of interest.
+
+Let's now get additional practice by working through the partial
+derivatives of the above function.
+
+\hypertarget{a-5}{%
+\subsubsection{6a)}\label{a-5}}
+
+To write out the derivatives, we need to understand how to type
+fractions in LaTeX notation. A fraction consists of three parts. The
+first is the phrase \texttt{\textbackslash{}frac}. The remaining two
+parts of a fraction are two sets of curly braces. The complete syntax is
+\texttt{\textbackslash{}frac\{\}\{\}}. The numerator is typed within the
+first set of curly braces and the denominator is typed within the second
+set of curly braces. Thus, the formulation for a fraction is:
+
+\texttt{\textbackslash{}frac\{\textless{}numerator\ expression\textgreater{}\}\{\textless{}denominator\ expression\textgreater{}\}}.
+
+As an example, one half written as a fraction is
+\texttt{\$\textbackslash{}frac\{1\}\{2\}\$}. The rendered LaTeX
+expression looks like \(\frac{1}{2}\).
+
+\hypertarget{problem-31}{%
+\paragraph{PROBLEM}\label{problem-31}}
+
+\textbf{Write out the partial derivative of \(f\) with respect to
+\(x_1\). To receive full credit you must use the
+\texttt{\textbackslash{}frac\{\}\{\}} to write out the partial
+derivative of \(f\) with respect to \(x_1\) on the left hand side of
+\(=\). The right hand side of \(=\) must be your expression for the
+partial first derivative.}
+
+\textbf{NOTE:} The ``partial'' operator, \(\partial\) is created by
+typing \texttt{\textbackslash{}partial}.
+
+\hypertarget{solution-30}{%
+\paragraph{SOLUTION}\label{solution-30}}
+
+\[ 
+\frac{\partial{f}}{\partial{$x_1$}} = ab$x_1$^{b - 1}
+\]
+
+\hypertarget{b-5}{%
+\subsubsection{6b)}\label{b-5}}
+
+Now write out the expression for the partial derivative of \(f\) with
+respect to \(x_2\).
+
+\hypertarget{problem-32}{%
+\paragraph{PROBLEM}\label{problem-32}}
+
+\textbf{Write out the partial derivative of \(f\) with respect to
+\(x_2\). To receive full credit you must use the
+\texttt{\textbackslash{}frac\{\}\{\}} to write out the partial
+derivative of \(f\) with respect to \(x_2\) on the left hand side of
+\(=\). The right hand side of \(=\) must be your expression for the
+partial first derivative.}
+
+\textbf{NOTE:} The ``partial'' operator, \(\partial\) is created by
+typing \texttt{\textbackslash{}partial}.
+
+\hypertarget{solution-31}{%
+\paragraph{SOLUTION}\label{solution-31}}
+
+\[ 
+HERE
+\]
+
+\hypertarget{c-5}{%
+\subsubsection{6c)}\label{c-5}}
+
+As discussed in lecture, we also need to work with second derivatives.
+
+\hypertarget{problem-33}{%
+\paragraph{PROBLEM}\label{problem-33}}
+
+\textbf{Write out the partial second derivative of \(f\) with respect to
+\(x_1\). Remember that the second derivative is the derivative of the
+first derivative.}
+
+\hypertarget{solution-32}{%
+\paragraph{SOLUTION}\label{solution-32}}
+
+\[ 
+HERE
+\]
+
+\hypertarget{d-5}{%
+\subsubsection{6d)}\label{d-5}}
+
+The second derivative in 6c) represents the rate-of-change with respect
+to \(x_1\) of the rate-of-change with respect to \(x_1\). We can also
+consider the cross-derivative, which examines the rate-of-change with
+respect to \(x_2\) of the rate-of-change with respect to \(x_1\).
+
+\hypertarget{problem-34}{%
+\paragraph{PROBLEM}\label{problem-34}}
+
+\textbf{What is the cross derivative equal to, for the example function
+of two variables? Write out the expression within an equation block
+below.}
+
+\hypertarget{solution-33}{%
+\paragraph{SOLUTION}\label{solution-33}}
+
+\[ 
+HERE
+\]
+
+\hypertarget{e-5}{%
+\subsubsection{6e)}\label{e-5}}
+
+In lecture, we also reviewed important linear algebra concepts. We
+discussed the inner product, and how we can write it out two ways. One
+approach is with vector-vector math, while the other involves a
+summation. For the next several problems you will work with a vector
+\(\mathbf{x}\) which is a \(\left(N \times 1\right)\) column vector.
+
+\hypertarget{problem-35}{%
+\paragraph{PROBLEM}\label{problem-35}}
+
+\textbf{Write out the vector-vector operation for the inner product of
+the vector \(\mathbf{x}\) with itself. Place your expression within an
+equation block below. You do not need to write out the elements of the
+vectors.}
+
+\hypertarget{solution-34}{%
+\paragraph{SOLUTION}\label{solution-34}}
+
+\[ 
+HERE
+\]
+
+\hypertarget{f-3}{%
+\subsubsection{6f)}\label{f-3}}
+
+The summation expression displayed in the instructions for Problem 6f)
+consists of three components. The first is the Sigma character, which is
+created by the typing \texttt{\textbackslash{}sum}. If we want the sigma
+character to appear in line, we wrap dollar signs around it,
+\texttt{\$\textbackslash{}sum\$}, and if we want it to appear within an
+equation block we wrap two dollar signs,
+\texttt{\$\$\textbackslash{}sum\$\$}. The \(n=1\) and \(N\) characters
+are displayed below and above the Sigma character with the \texttt{\_}
+and \texttt{\^{}} special characters, respectively.
+
+\hypertarget{problem-36}{%
+\paragraph{PROBLEM}\label{problem-36}}
+
+\textbf{Write out the summation approach to the inner product within an
+equation block below.}
+
+\hypertarget{solution-35}{%
+\paragraph{SOLUTION}\label{solution-35}}
+
+\[ 
+HERE
+\]
+
+\hypertarget{g-2}{%
+\subsubsection{6g)}\label{g-2}}
+
+In the 6e), the vector \(\mathbf{x}\) was defined to be a
+\(\left(N \times 1 \right)\) column vector. What are the dimensions of
+the inner product of \(\mathbf{x}\) with itself? What would the
+dimensions of the outer product of \(\mathbf{x}\) be with itself?
+
+\hypertarget{problem-37}{%
+\paragraph{PROBLEM}\label{problem-37}}
+
+\textbf{Write the dimensions of the inner product and the dimensions of
+the outer product of \(\mathbf{x}\) with itself. Note that to display
+the multiplication sign you can type \texttt{\textbackslash{}times}.}
+
+\hypertarget{solution-36}{%
+\paragraph{SOLUTION}\label{solution-36}}
+
+Type your answer here.
+
+\hypertarget{h}{%
+\subsubsection{6h)}\label{h}}
+
+We will frequently use greek letters when writing expressions and
+equations. Thankfully, it is rather simple to type greek letters in
+LaTeX. All you have to do is type the escape character
+\texttt{\textbackslash{}} in front of the greek word. For example to
+display \(\delta\), just type \texttt{\$\textbackslash{}delta\$}. To
+show the capital letter \(\Delta\) use a capital \texttt{D} instead of a
+lower case \texttt{d}: \texttt{\$\textbackslash{}Delta\$}.
+
+\hypertarget{problem-38}{%
+\paragraph{PROBLEM}\label{problem-38}}
+
+\textbf{Practice typing the greek letters listed in the instruction file
+in an equation block below. Separate each letter by the LaTeX term
+\texttt{\textbackslash{}cdot} which displays the ``dot-multiply''
+operator, \(\cdot\).}
+
+\emph{Hint}: the greek words are alpha, beta, gamma, epsilon, mu, sigma,
+and psi.
+
+\hypertarget{solution-37}{%
+\paragraph{SOLUTION}\label{solution-37}}
+
+\[ 
+HERE
+\]
+
+\end{document}
