@@ -1,7 +1,7 @@
 ---
 title: 'CS 1675 Homework: 01'
 subtitle: 'Assigned: January 9, 2020; Due: January 17, 2020'
-author: "Your name here"
+author: "Shibo Xing "
 date: "Submission time: January 17, 2020 at 5:00PM"
 output: pdf_document
 ---
@@ -13,6 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 #### Collaborators
 
 Include the names of your collaborators here.  
+Tanner Stauffer, 
+Abbas Ahmed,
+Nur Iren
 
 ## Overview
 
@@ -202,6 +205,8 @@ We will now modify the `iris` dataset by discretizing `Sepal.Length` via the `cu
 my_iris <- iris %>% 
   mutate(sepal_length_bin = cut(iris$Sepal.Length, breaks = hist_breaks, include.lowest = TRUE))
 
+my_iris$sepal_length_bin
+
 ```
 
 ## Problem 3
@@ -312,9 +317,13 @@ The resulting bar graph in Problem 3f) looks different from the histogram visual
 
 #### SOLUTION
 
-Here we map the sepal_length_bin to the x-axis. 'sepal_length_bin' was created by cut() function with 3 breakpoints, generating four possible values. Since we didn't set a arbitrary bin count, naturally we will have 4 intervals, as in 4 bins in our 3f) histogram. 
+Here we map the sepal_length_bin to the x-axis. 'sepal_length_bin' was created by cut() function with 7 breakpoints, creating 6 unique values. 
+Thus it is discrete data. After counting the observations of each unique value, we set the x-axis of the value label.
 
-In problem 1, we map the Sepal.length to the x-axis, which has more unique values than sepal_length_bin. Also, we set the bin count to an arbitrary number. Thus, the x-axes of the histograms look differently in these two problems. 
+In problem 1, we map the Sepal.length to the x-axis, which is continuous data.
+Thus, we set the bin count to an arbitrary number, dividing the continuous data into 6 chunks.
+
+Thus, the x-axes of the histograms look differently in these two problems. 
 
 ## Problem 4
 
@@ -441,8 +450,7 @@ iris_group %>%
 ```
 
 Our histogram shows the increases and decreases of the number of observations. The change in the frequency of the data might not be clear in the native historgram. With the line segments in the histogram, we can more easily envision the distrbution of the data set. On the other hand, in the native histogram, many outliers and the uneven bars hinders our ability to make sense of the distribution. 
-
-Additionally, the average lengths that have the highest frequencies are shown, in the native histogram we can hardly tell what where mode of the distribution is. 
+ 
 
 ## Problem 5
 
@@ -647,7 +655,7 @@ As discussed in lecture, we also need to work with second derivatives.
 #### SOLUTION
 
 $$ 
-\frac{\partial{f}}{\partial{x_{1}}} = (ab^{2} - ab)x_{1}^{b - 2}
+\frac{\partial^{2}{f}}{\partial{x_{1}^{2}}} = (ab^{2} - ab)x_{1}^{b - 2}
 $$
 
 ### 6d)
@@ -675,7 +683,7 @@ In lecture, we also reviewed important linear algebra concepts. We discussed the
 #### SOLUTION
 
 $$ 
-HERE
+  x^{T} x = (1 \times N) \cdot (N \times 1) = (1 \times 1) 
 $$
 
 ### 6f)
@@ -689,7 +697,7 @@ The summation expression displayed in the instructions for Problem 6f) consists 
 #### SOLUTION
 
 $$ 
-HERE
+x \cdot x = \sum_{i=1}^{N}x_{i}^{2}
 $$
 
 ### 6g)
@@ -702,7 +710,10 @@ In the 6e), the vector $\mathbf{x}$ was defined to be a $\left(N \times 1 \right
 
 #### SOLUTION
 
-Type your answer here.  
+$$
+  inner\ product: x^T * x = (1 \times\ N) \cdot (N \times 1) = (1 \times 1) \\
+  outer\ product: x * x^{T} = (N \times\ 1)\cdot (1 \times N) = (N \times N)
+$$
 
 ### 6h)
 
@@ -717,6 +728,6 @@ We will frequently use greek letters when writing expressions and equations. Tha
 #### SOLUTION
 
 $$ 
-HERE
+\alpha \cdot \beta \cdot \gamma \cdot \epsilon \cdot \mu \cdot \sigma \cdot \psi
 $$
 
