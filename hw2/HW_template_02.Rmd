@@ -422,19 +422,19 @@ start_atbats <- 30
 The MLE based on the first 30 at bats is:  
 
 ```{r, solution_03c_a}
-### your code here
+start_mle = start_hits / start_atbats
 ```
 
 The prior mean on the probability of a hit is:  
 
 ```{r, solution_03c_b}
-### your code here
+prior_mean = a_prior / (a_prior + b_prior)
 ```
 
 The prior number of "at bats" based on the prior hyperparameters is:  
 
 ```{r, solution_03c_c}
-### your code here
+prior_atbats = a_prior 
 ```
 
 ?  
@@ -456,10 +456,14 @@ To calculate the the quantile of a Beta distribution you can use `qbeta()` funct
 The 0.05 and 0.95 quantiles of the Beta prior are:  
 
 ```{r, solution_03d}
-### your code here
+qbeta(p = 0.05, shape1 = a_prior, shape2 = b_prior)
+qbeta(p = 0.95, shape1 = a_prior, shape2 = b_prior)
+
 ```
 
-?  
+0.05 quantile tells us that only 5 percent of probability is less than 0.21, meaning that the 0.2 probability MLE based on the first 30 bats might be highly unrepresentative of the player. 
+
+MLE based on 602 is greater than 0.05 quantile probability and slightly less than that of the 0.95 quantile. The mode of the probability is in between of 0.05 and 0.95 quantile, which is also the range of MLE probability based on a sufficient number of observations. 
 
 ### 3e)
 
@@ -473,12 +477,12 @@ The code chunk below defines two sets of variables. The first set are `a_post_st
 
 #### SOLUTION
 
-```{r, solution_03e, eval=FALSE}
-a_post_start <- 
-b_post_start <- 
+```{r, solution_03e, eval=TRUE}
+a_post_start <- start_hits + a_prior
+b_post_start <- start_atbats + b_prior
 
-a_post_player <- 
-b_post_player <- 
+a_post_player <- player_hits + a_prior
+b_post_player <- player_atbats + b_prior
 ```
 
 ### 3f)
@@ -493,13 +497,16 @@ Our updated hyperparameters define the posterior Beta distribution which combine
 
 Calculate the posterior means for the two conditions below.  
 
-```{r, solution_03f, eval=FALSE}
-post_mean_start <- 
+```{r, solution_03f, eval=TRUE}
+post_mean_start <- a_post_start / (a_post_start + b_post_start)
+post_mean_player <- a_post_player / (a_post_player + b_post_player)
 
-post_mean_player <- 
+post_mean_start
+post_mean_player
+
 ```
 
-Add in your discussion.  
+they are the same as their corresponding MLEs. MLE gives us the most probable mean, which is when the derivative of Beta distribution is 0, of which the expression equals to # of events / # of trials.
 
 ### 3g)
 
@@ -511,7 +518,15 @@ Let's now consider our posterior uncertainty in the probability of a hit. You wi
 
 #### SOLUTION
 
-Create your own code chunks to calculate the 0.05 and 0.95 quantiles for BOTH conditions and add in your discussion.  
+Create your own code chunks to calculate the 0.05 and 0.95 quantiles for BOTH conditions and add in your discussion.   
+```{r, solution_03g, eval=TRUE}
+qbeta(p = 0.05, shape1 = a_post_start, shape2 = b_post_start)
+qbeta(p = 0.95, shape1 = a_post_start, shape2 = b_post_start)
+
+qbeta(p = 0.05, shape1 = a_post_player, shape2 = b_post_player)
+qbeta(p = 0.95, shape1 = a_post_player, shape2 = b_post_player)
+```
+both MLEs based on 30 and 602 observations are both contained within the middle 90% uncertainty intervals in their corresponding posterior distributions.
 
 ### 3h)
 
@@ -524,10 +539,14 @@ In Major League Baseball, a player is traditionally considered to be a very good
 #### SOLUTION
 
 Create your own code chunk to perform the necessary calculation and include your discussion.  
+```{r, solution_03h, eval=TRUE}
+pbeta(q = 1, shape1 = a_post_player, shape2 = b_post_player) - pbeta(q = 0.3, shape1 = a_post_player, shape2 = b_post_player) 
+```
+No I would not. The probability that the player will have a hit probability greater than 0.3 is only 8.79e-0.5, which is very slim. Although they have a good prior record, the observations of this season really bring them down. 
 
 ## Problem 4
 
-In lecture we discussed estimating the unknown mean of a normal likelihood, given a series of observations. We derived the MLE and studied the Bayesian formulation through the conjugate normal prior. In this problem, you will still work with a normal likelihood, but now we will consider the situation that the mean is known, while the standard deviation (or likelihood noise) is unknown. The $N$ observations will still be denoted as a vector, $\mathbf{x}$. The known mean is $\mu$ and the unknown likelihood noise is $\sigma$. The posterior on $\sigma$ given the observations and the known mean is proportional to:  
+In lecture we discussed estimating the unknown mean of a normal likelihood, given a series of observations. We derived the MLE and studied the Bayesian formulation through the conjugate normal prior. In this problem, you will still work with a normal likelihood, but now we will consider the situation that the mean is known, while the standard deviation (or likelihood noise) is unknown. The $N$ observations will still be denoted as a vector, $\mathbf{x}$. The known mean is $\mu$ and the unknown likelihood noise is $\sigma$. The posterior on $\sigma$ given the observations and the known mean is proportional to: 
 
 $$ 
 p \left(\sigma \mid \mathbf{x}, \mu\right) \propto p\left(\mathbf{x} \mid \mu, \sigma \right) p\left(\sigma\right)
