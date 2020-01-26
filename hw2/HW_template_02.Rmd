@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Include the names of your collaborators here.  
+Ziyi Gong
 
 ## Overview
 
@@ -63,7 +63,7 @@ $$
 For this particular example:  
 
 ```{r, solution_01a}
-player_hits / player_atbats
+player_mle <- player_hits / player_atbats
 ```
 
 ### 1b)
@@ -78,8 +78,9 @@ Let's check your answer in 1a) by visualizing the log-likelihood with respect to
 
 $$ 
 Binomial(H|\mu,AB) \propto log(\mu^{H}(1 - \mu)^{AB - H})  \\
-= log(\mu^{189}(1 - \mu)^{413})  \\ 
-= 189\cdot log(\mu) + 413\cdot log(1 - \mu)
+= log(\mu^{H}) + log(1 - \mu)^{AB - H}  \\ 
+= H\cdot log(\mu) + (AB - H)\cdot log(1 - \mu) \\ 
+= 108\cdot log(\mu) + 412\cdot log(1-\mu)
 $$
 
 ### 1c)
@@ -105,7 +106,7 @@ tibble::tibble(
   mutate(log_lik = log(mu ^ player_hits * (1 - mu) ^ (player_atbats - player_hits))) %>%
   ggplot(mapping = aes(x = mu, y = log_lik)) + 
   geom_line() + 
-  geom_vline(mapping = aes(), xintercept = 0.3139535)
+  geom_vline(mapping = aes(), xintercept = player_mle)
   
  
 ```
@@ -176,7 +177,7 @@ tibble::tibble(
                                         prob = mu)) %>%
   ggplot(mapping = aes(x = mu, y = log_lik)) + 
   geom_line() + 
-  geom_vline(mapping = aes(), xintercept = 0.3139535)
+  geom_vline(xintercept = player_mle)
 ```
 
 ### 1f)
@@ -223,10 +224,10 @@ tibble::tibble(
                                         prob = mu)) %>%
   ggplot(mapping = aes(x = mu, y = log_lik)) + 
   geom_line() + 
-  geom_vline(mapping = aes(), xintercept = 0.3139535)
+  geom_vline(xintercept = player_mle)
 ```
 
-?  
+Yes it is the same location as before.
 
 ## Problem 2
 
@@ -243,7 +244,7 @@ Use the `log_binom_pmf()` function to calculate the probability of observing the
 #### SOLUTION
 
 ```{r, solution_02a, eval=TRUE}
-log_binom_pmf(events = 189, trials = 602, prob = 0.3)
+exp(log_binom_pmf(events = 189, trials = 602, prob = 0.3))
 ### your code here
 ```
 
@@ -260,7 +261,7 @@ For the Binomial distribution, the predefined function is `dbinom()`. It contain
 #### SOLUTION
 
 ```{r, solution_02b, eval=TRUE}
-dbinom(x = player_hits, size = player_atbats, prob = 0.3, log = TRUE)
+dbinom(x = player_hits, size = player_atbats, prob = 0.3, log = FALSE)
 ```
 
 ### 2c)
@@ -309,7 +310,7 @@ coin_probs
 # length?
 length(coin_probs)
 ```
-?  
+it corresponds to observing exactly 0 heads out of 11 trails. 
 
 ### 2e)
 
@@ -355,8 +356,8 @@ With the `dbinom()` and `pbinom()` functions we can now work through many differ
 To calculate the probability of observing the number of hits between a specific interval, we have to take the difference of the summations.  
 
 ```{r, solution_02g}
-pbinom(q = 195, size = 602, prob = 0.3) - pbinom(q = 175, size = 602, prob = 0.3)
-pbinom(q = 205, size = 602, prob = 0.3) - pbinom(q = 165, size = 602, prob = 0.3)
+pbinom(q = 195, size = 602, prob = 0.3) - pbinom(q = 174, size = 602, prob = 0.3)
+pbinom(q = 205, size = 602, prob = 0.3) - pbinom(q = 164, size = 602, prob = 0.3)
 ```
 
 ?  
@@ -552,7 +553,7 @@ $$
 p \left(\sigma \mid \mathbf{x}, \mu\right) \propto p\left(\mathbf{x} \mid \mu, \sigma \right) p\left(\sigma\right)
 $$
 
-We will continue to assume all observations are conditionally independent given the parameters. The likelihood therefore factors into the product of $N$ normal likelihoods:  
+We will continue to assume all observations are conditionally independent given the parameters. The likelihood therefore factors into the product of $N$ normal likelih oods:  
 
 $$ 
 p \left(\sigma \mid \mathbf{x}, \mu\right) \propto \prod_{n=1}^{N} \left(\mathrm{normal}\left( x_n \mid \mu, \sigma \right) \right) \times  p\left(\sigma\right)
@@ -578,11 +579,19 @@ $$
 
 #### SOLUTION
 
-Use multiple equation blocks to complete the derivation.  
+$$
+\begin{aligned}
+\log(p(\sigma  \mid  \mathbf{x}, \mu)) \propto log(\prod_{n=1}^{N}(\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2 \sigma^2}(x_n-\mu)^2}) \times \lambda \exp \left(-\lambda \sigma \right)) \\
+\log(p ( \sigma  \mid  \mathbf{x}, \mu)) \propto \sum_{n=1}^{N}(log(\frac{1}{\sigma})+log(\frac{1}{\sqrt{2\pi}}) -\frac{(x_n-\mu)^2}{2\sigma^2}) + \log(\lambda) -\lambda \sigma  \\
+\log(p ( \sigma \mid  \mathbf{x}, \mu)) \propto \sum_{n=1}^{N}(log(\frac{1}{\sigma}) -\frac{(x_n-\mu)^2}{2 \sigma^2 })  -\lambda \sigma \\  
+\log(p ( \sigma \mid  \mathbf{x}, \mu)) \propto \sum_{n=1}^{N}(log(\frac{1}{\sigma})) -\sum_{n=1}^{N}(\frac{(x_n-\mu)^2}{2 \sigma^2})  -\lambda \sigma  \\
+\log(p ( \sigma \mid \mathbf{x}, \mu)) \propto N\cdot log(\frac{1}{\sigma}) -(\frac{\sum_{n=1}^{N}((x_n-\mu)^2)}{2 \sigma^2})  -\lambda \sigma 
+\end{aligned} 
+$$
 
 ### 4b)
 
-When we discussed the normal-normal model for the unknown mean, we talked about the sufficient statistic being the sample average. This situation, an unknown standard deviation with a known mean, also has a sufficient statistic, but it is not the sample average. The sufficient statistic is defined for you in the equation block below:  
+When we discussed the normal-normal model for the unknown mean, we talked about the sufficient statistic being the sample average. This situation, an unknown standard deviation with a known mean, also has a sufficient statistic, but it is not the sample average. The sufficient statistic is defined for you in the equation block below:
 
 $$ 
 v = \frac{1}{N} \sum_{n=1}^{N}\left( \left(x_n - \mu\right)^2 \right)
@@ -593,8 +602,12 @@ $$
 **Simplify your result from Problem 4a), by making use of the sufficient statistic, $v$. Why do you think the quantity $v$ is referred to as being "sufficient"? Does your expression for the log-posterior depend on the individual observations after making use of $v$?**  
 
 #### SOLUTION
+$$
+log( p( \sigma  \mid \mathbf{x}, \mu)) \propto N \cdot log(\frac{1}{\sigma})-\frac{N\cdot v}{2 \sigma^2}-\lambda \sigma 
+$$
 
-Write out the simplified expression and include your discussion.  
+As we have proven with our simplified expression, the log posterior depends on v, the statistical function rather than individual observations in x. Thus, the posterior of $\sigma$ given vector x and $\mu$ is the same as the posterior of $\sigma$ given v and $\mu$. Thus, we can say that v can be refered to as being sufficient.
+
 
 ### 4c)
 
@@ -615,9 +628,10 @@ In this problem, you will define a function `log_post_sigma_unnorm()` which has 
 
 ```{r, solution_04c, eval=FALSE}
 ### set input arguments !!!
-log_post_sigma_unnorm <- function()
+log_post_sigma_unnorm <- function(sigma, N, v, lambda)
 {
-  # your code here
+  res = N * log(sigma ^ -1) - (N * v) / (2 * sigma ^ 2) - lambda * sigma
+  return(res)
 }
 ```
 
@@ -633,14 +647,16 @@ Let's visualize the log-posterior with respect $\sigma$. You will use the create
 
 #### SOLUTION
 
-```{r, solution_04d, eval=FALSE}
+```{r, solution_04d, eval=TRUE}
 tibble::tibble(
-  sigma = 
+  sigma = seq(0.5, 4.5, length.out = 101)
 ) %>% 
-  mutate()
+  mutate(log_post = log_post_sigma_unnorm(sigma, N, v, 0.75)) %>%
+  ggplot(mapping = aes(x = sigma, y = log_post)) +
+  geom_line()
 ```
 
-?  
+It has only one mode. The shape does look like a parabola.
 
 ### 4e)
 
