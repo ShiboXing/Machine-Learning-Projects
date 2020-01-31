@@ -1,0 +1,151 @@
+---
+title: "Laplace Programming"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r, setup}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r, create_random_values}
+mu_true <- 254.4
+sigma_true <- 2.5
+
+set.seed(5001) #pseudo-random number sequence differs on different operating system
+x <- rnorm(n = 50, mean = mu_true, sd = sigma_true)
+```
+
+```{r, create_logprior}
+my_logprior <- function(theta, my_info)
+{
+  
+  lik_mu <- theta[1] #the unknown mean
+  lik_sig <- theta[2] #the unknown noise
+  
+  dnorm(x = lik_mu, 
+        mean = my_info$mu_0, 
+        sd = my_info$tau_0,
+        log = TRUE) + 
+    dunif(x = lik_sig,
+          min = my_info$sigma_lwr,
+          max = my_info$sigma_upr,
+          log = TRUE)
+}
+```
+
+
+create a grid of points between the two unknowns
+
+```{r, make_parameter_grid}
+param_grid <- expand.grid(mu = seq(245, 265, length.out = 201), 
+                          sigma = seq(0.5, 25.5, length.out = 201),
+                          KEEP.OUT.ATTRS = FALSE,
+                          stringsAsFactors = FALSE) %>%
+  as.data.frame() %>% tbl_df()
+```
+
+specify the list of required information for the function
+```{r, make_info_list}
+hyper_list <- list(
+  mu_0 = 250,
+  tau_0 = 2,
+  sigma_lwr = 0.5,
+  sigma_upr = 20.5
+)
+
+hyper_list
+```
+
+Define a wrapper function to call the log-density evalution
+```{r}
+eval_logdensity <- function(mu_val, sigma_val, my_logdens, my_info)
+{
+   my_logdens(c(mu_val, sigma_val), my_info)
+}
+```
+
+In 'R' there are the suite of 'apply' functions. The 'tidy' analogus are in the 'purrr', 
+```{r}
+  log_prior_result <- purrr::map2_dbl(param_grid$mu, param_grid$sigma,
+                                      eval_logdensity, 
+                                      my_logdens = my_logprior,
+                                      my_info = hyper_list)
+```
+
+purrr::map_dbl(), purrr::map2_dbl(), purrr:pmap_dbl()
+
+Visualize the log-prior surface
+
+```{r}
+param_grid %>%
+    mutate(log_dens = log_prior_result) %>%
+    mutate(log_dens_2 = log_dens - max(log_dens)) %>%
+    ggplot(mapping = aes(x = mu, y = sigma)) + 
+    geom_raster(mapping = aes(fill = log_dens_2)) +
+    stat_contour(mapping = aes(z = log_dens_2), 
+                 breaks = log(c(0.01/100, 0.01, 0.1, 0.5, 0.9)),
+                 size = 2.2,
+                 color = 'black') +
+    scale_fill_viridis_c(guide = FALSE, limits = log(c(0.01/100, 1.0))) + 
+    labs(x = expression(mu), y = expression(sigma)) + 
+    theme_bw()
+
+
+```
+
+```{r}
+my_logpost <- function(theta, my_info)
+{
+  lik_mu <- theta[1] #the unknown mean
+  lik_sigma <- theta[2] #the unknown noise
+  
+  log_lik <- sum(dnorm(x = my_info$xobs,
+                       mean = lik_mu, 
+                       sd = lik_sigma,
+                       log = TRUE))
+  log_prior <- dnorm(x = lik_mu, 
+        mean = my_info$mu_0, 
+        sd = my_info$tau_0,
+        log = TRUE) + 
+    dunif(x = lik_sigma,
+          min = my_info$sigma_lwr,
+          max = my_info$sigma_upr,
+          log = TRUE)
+  
+  return(log_lik + log_prior)
+}
+```
+
+Create a new list which includes the observed values.
+
+```{r}
+info_N35 <- list(
+  xobs = x[1:35],
+  mu_0 = 250,
+  tau_0 = 2,
+  sigma_lwr = 0.5,
+  sigma_upr = 20.5
+)
+
+```
+
+Evalute the log-posterior over the grid.
+```{r, eval=FALSE}
+log_post_result <- purrr::map2_dbl(param_grid$mu,)
+```
+
+Optimization to find the mode
+```{r}
+map_result <- optim(c(250, 5), 
+                    my_logpost,
+                    gr = NULL,
+                    info_N05, 
+                    method = "BFGS",
+                    hessian = TRUE,
+                    control = list(fnscale = -1, maxit = 1001))
+```

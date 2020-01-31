@@ -12,7 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Ziyi Gong
+Ziyi Gong,
+Tanner Stauffer,
+Nur Iren
 
 ## Overview
 
@@ -64,6 +66,7 @@ For this particular example:
 
 ```{r, solution_01a}
 player_mle <- player_hits / player_atbats
+player_mle
 ```
 
 ### 1b)
@@ -77,10 +80,12 @@ Let's check your answer in 1a) by visualizing the log-likelihood with respect to
 #### SOLUTION
 
 $$ 
+\begin{aligned}
 Binomial(H|\mu,AB) \propto log(\mu^{H}(1 - \mu)^{AB - H})  \\
 = log(\mu^{H}) + log(1 - \mu)^{AB - H}  \\ 
 = H\cdot log(\mu) + (AB - H)\cdot log(1 - \mu) \\ 
 = 108\cdot log(\mu) + 412\cdot log(1-\mu)
+\end{aligned}
 $$
 
 ### 1c)
@@ -325,7 +330,7 @@ The probability of observing at most 5 heads out of 11 trials is then equal to t
 ```{r, solution_02e}
 sum(coin_probs)
 ```
-The probability is the sum of the coin_probs vector.
+The probability of observing less than or equal to 5 heads out of 11 flips.
 
 ### 2f)
 
@@ -379,7 +384,10 @@ In our baseball example, although the player ended the season with a good "batti
 #### SOLUTION
 
 $$ 
-Beta(\mu|a,b) \propto \mu^{a-1}(1-\mu)^{b-1}
+\begin{aligned}
+Beta(\mu \mid a,b) \propto \log(\mu^{a-1}(1-\mu)^{b-1}) \\ 
+Beta(\mu \mid a,b) \propto (a-1)\log\mu+ (b-1)\log(1-\mu) 
+\end{aligned}
 $$
 
 ### 3b)
@@ -394,10 +402,11 @@ We already know that since the Beta is conjugate to the Binomial, the posterior 
 
 $$
 \begin{aligned}
-p(\mu|m,N) \propto Binomial(m|N,\mu)Beta(\mu|a,b) \\
-p(\mu|m,N) = Beta(\mu|a,b) \propto \mu^m(1-\mu)^{N-m}\mu^{a-1}(1-\mu)^{b-1} \\
+p(\mu|m,N) \propto Binomial(m|N,\mu) \cdot Beta(\mu|a,b) \\
+p(\mu|m,N) =  \mu^m(1-\mu)^{N-m}\mu^{a-1}(1-\mu)^{b-1} \\
 p(\mu|m,N) \propto \mu^{m+a-1}(1-\mu)^{N-m+b-1} \\
-Posterior: p(\mu|m,N) = Beta(\mu,a+m,b+(N-m))
+p(\mu|m,N) = Beta(\mu,a+m,b+(N-m)) \\ 
+a_{new} = a + m, b_{new} = b + (N - m)
 \end{aligned}
 $$
 
@@ -480,10 +489,10 @@ The code chunk below defines two sets of variables. The first set are `a_post_st
 
 ```{r, solution_03e, eval=TRUE}
 a_post_start <- start_hits + a_prior
-b_post_start <- start_atbats + b_prior
+b_post_start <- start_atbats + b_prior - start_hits
 
 a_post_player <- player_hits + a_prior
-b_post_player <- player_atbats + b_prior
+b_post_player <- player_atbats + b_prior - player_hits
 ```
 
 ### 3f)
@@ -505,9 +514,10 @@ post_mean_player <- a_post_player / (a_post_player + b_post_player)
 post_mean_start
 post_mean_player
 
+
 ```
 
-they are the same as their corresponding MLEs. MLE gives us the most probable mean, which is when the derivative of Beta distribution is 0, of which the expression equals to # of events / # of trials.
+Both MLEs are higher than their posterior means since player has higher probability of hits this season. The prior data indicates a worse performance the player had before. Since MLEs are solely based on the observations of this season, the posterior takes into account of both prior and observations, the posteriors are lower than MLEs. 
 
 ### 3g)
 
@@ -527,7 +537,7 @@ qbeta(p = 0.95, shape1 = a_post_start, shape2 = b_post_start)
 qbeta(p = 0.05, shape1 = a_post_player, shape2 = b_post_player)
 qbeta(p = 0.95, shape1 = a_post_player, shape2 = b_post_player)
 ```
-both MLEs based on 30 and 602 observations are both contained within the middle 90% uncertainty intervals in their corresponding posterior distributions.
+MLE based on 602 observations is within the middle 90% uncertainty intervals, the MLE based on 30 observations is not within this range.
 
 ### 3h)
 
@@ -541,9 +551,12 @@ In Major League Baseball, a player is traditionally considered to be a very good
 
 Create your own code chunk to perform the necessary calculation and include your discussion.  
 ```{r, solution_03h, eval=TRUE}
+
+pbeta(q = 1, shape1 = a_prior, shape2 = b_prior) - pbeta(q = 0.3, shape1 = a_prior, shape2 = b_prior) 
+
 pbeta(q = 1, shape1 = a_post_player, shape2 = b_post_player) - pbeta(q = 0.3, shape1 = a_post_player, shape2 = b_post_player) 
 ```
-No I would not. The probability that the player will have a hit probability greater than 0.3 is only 8.79e-0.5, which is very slim. Although they have a good prior record, the observations of this season really bring them down. 
+I would they are likely to be a player. After the evaluation of the whole season, we found out that the integral from 0.3 quantile to 1 quantile takes up 65%, meaning we are 65% confident that the player will hit more than 30%.
 
 ## Problem 4
 
@@ -586,7 +599,7 @@ $$
 \log(p ( \sigma \mid  \mathbf{x}, \mu)) \propto \sum_{n=1}^{N}(log(\frac{1}{\sigma}) -\frac{(x_n-\mu)^2}{2 \sigma^2 })  -\lambda \sigma \\  
 \log(p ( \sigma \mid  \mathbf{x}, \mu)) \propto \sum_{n=1}^{N}(log(\frac{1}{\sigma})) -\sum_{n=1}^{N}(\frac{(x_n-\mu)^2}{2 \sigma^2})  -\lambda \sigma  \\
 \log(p ( \sigma \mid \mathbf{x}, \mu)) \propto N\cdot log(\frac{1}{\sigma}) -(\frac{\sum_{n=1}^{N}((x_n-\mu)^2)}{2 \sigma^2})  -\lambda \sigma 
-\end{aligned} 
+\end{aligned}
 $$
 
 ### 4b)
@@ -626,7 +639,7 @@ In this problem, you will define a function `log_post_sigma_unnorm()` which has 
 
 #### SOLUTION
 
-```{r, solution_04c, eval=FALSE}
+```{r, solution_04c, eval=TRUE}
 ### set input arguments !!!
 log_post_sigma_unnorm <- function(sigma, N, v, lambda)
 {
@@ -656,7 +669,7 @@ tibble::tibble(
   geom_line()
 ```
 
-It has only one mode. The shape does look like a parabola.
+It has only one mode. The shape looks lagorithmic.
 
 ### 4e)
 
@@ -674,7 +687,7 @@ $$
 \log\left(p_{\varphi} \left(\varphi \mid \mathbf{x}, \mu\right) \right) = \log \left( p_{\sigma} \left( g^{-1} \left(\varphi \right) \mid \mathbf{x}, \mu \right) \right) + \log \left( \left| \frac{d}{d\varphi} \left( g^{-1}\left(\varphi\right) \right) \right| \right)
 $$
 
-This may seem like an intimidating expression, but it simply says plug in the expression for $\sigma$ in terms of $\varphi$ (the inverse of the link function) into the log-posterior expression on $\sigma$. Then add in the log of the derivative of the inverse link function with respect to $\varphi$.  
+This may seem like an intimidating expression, but it simply sazys plug in the expression for $\sigma$ in terms of $\varphi$ (the inverse of the link function) into the log-posterior expression on $\sigma$. Then add in the log of the derivative of the inverse link function with respect to $\varphi$.  
 
 Let's tackle this problem by first determining the log of the derivative of the inverse link function.  
 
@@ -684,7 +697,11 @@ Let's tackle this problem by first determining the log of the derivative of the 
 
 #### SOLUTION
 
-Use multiple equation blocks to answer each of the derivations.  
+$$
+\sigma = e^\varphi \\
+\frac{d}{d\varphi}(g^{-1}(\varphi)) = \frac{de^\varphi}{d\varphi} = e^\varphi \\
+\log(\frac{d}{d\varphi}(g^{-1}(\varphi)) = \varphi
+$$
 
 ### 4f)
 
@@ -696,18 +713,20 @@ To handle the substitution portion, you will define a new function `log_post_var
 
 #### SOLUTION
 
-```{r, solution_04f, eval=FALSE}
+```{r, solution_04f, eval=TRUE}
 ### set the input arguments !!!
-log_post_varphi_unnorm <- function( )
+log_post_varphi_unnorm <- function(varphi, N, v, lambda)
 {
   # back-calculate sigma given varphi
-  sigma <- 
+  sigma <- exp(varphi)
   
   # calculate the unnormalized log-posterior on sigma
-  log_post <- 
+  log_post <- N * log(sigma ^ -1) - (N * v) / (2 * sigma ^ 2) - lambda * sigma
   
   # account for the derivative adjustment
+  log_post <- log_post + varphi
   
+  return (log_post)
 }
 ```
 
@@ -723,11 +742,13 @@ You will continue to use a prior rate parameter value of 0.75.
 
 #### SOLUTION
 
-```{r, solution_04g, eval=FALSE}
+```{r, solution_04g, eval=TRUE}
 tibble::tibble(
-  varphi = 
+  varphi = seq(0.5, 4.5, length.out = 101)
 ) %>% 
-  mutate()
+  mutate(log_post = log_post_varphi_unnorm(varphi, N, v, 0.75)) %>%
+  ggplot(mapping = aes(x = varphi, y = log_post)) +
+  geom_line()
 ```
 
-?  
+Yes it looks more like a parabola now.
