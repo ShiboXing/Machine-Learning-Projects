@@ -56,7 +56,12 @@ Let's start out by visualizing and summarizing the available measurements.
 
 #### SOLUTION
 
-Your solution here.  
+```{r, 1a, eval=TRUE}
+df_01 %>% ggplot(aes = map(x = obs_id, t = x)) %>%
+  geom_line() + 
+  geom_point()
+
+```
 
 ### 1b)
 
