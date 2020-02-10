@@ -57,8 +57,8 @@ Let's start out by visualizing and summarizing the available measurements.
 #### SOLUTION
 
 ```{r, 1a, eval=TRUE}
-df_01 %>% ggplot(aes = map(x = obs_id, t = x)) %>%
-  geom_line() + 
+df_01 %>% ggplot(mapping = aes(x = obs_id, y = x)) +
+  geom_line() +
   geom_point()
 
 ```
@@ -68,12 +68,15 @@ df_01 %>% ggplot(aes = map(x = obs_id, t = x)) %>%
 #### PROBLEM
 
 **Create a histogram with `geom_histogram()`, by mapping the `x` aesthetic to the variable `x`. Set the number of bins to be 25.**  
-
+```{r, 1b, eval=TRUE}
+df_01 %>% ggplot(mapping = aes(x = x)) +
+  geom_histogram(bins=25)
+```
 **Based on the histogram and the run chart, where are most of the measurement values concentrated? What shape does the distribution look like?**  
 
 #### SOLUTION
 
-Your solution here.  
+most of the values concentrate at the x = 0, the shape looks like a symmetric bell-curve, which is a normal distrbution. 
 
 ### 1c)
 
@@ -87,13 +90,11 @@ Your solution here.
 
 ```{r, solution_01c, eval=TRUE}
 ### apply the summary function
-
-
+df_01 %>% summary()
 ### calculate the quantile estimates
-
-
+df_01$x %>% quantile(probs = c(0.05, 0.95))
 ### calculate the empirical standard deviation of x
-
+df_01$x %>% sd()
 ```
 
 ?  
@@ -112,7 +113,12 @@ In `dplyr` we can calculate "rolling" sample averages with the `cummean()` funct
 
 #### SOLUTION
 
-Your solution here.  
+```{r, 1d, eval=TRUE}
+df_01 %>% mutate(rolling_avg = cummean(df_01$x)) %>% 
+  ggplot(mapping = aes(x = obs_id, y = rolling_avg)) +
+  geom_line() 
+
+```
 
 ### 1e)
 
@@ -124,7 +130,10 @@ In this problem, you will focus on two specific sample sizes. You will calculate
 
 #### SOLUTION
 
-Your solution here.  
+```{r, 1e, eval=TRUE}
+df_01$x[0:5] %>% mean()
+df_01$x[0:45] %>% mean()
+```
 
 ## Problem 2
 
@@ -146,7 +155,14 @@ You will be applying the Laplace Approximation to learn the unknown $\mu$ and $\
 
 #### SOLUTION
 
-?  
+The change-of-variable of sigma to phi is via the inverse of logit function: 
+$$
+logit(\frac{\sigma - l}{u - l}) = g(\sigma) = \varphi
+$$
+$$
+\sigma = logit^{-1}(\phi) \cdot (u - l) + l = g^{-1}(\phi)
+$$
+Thus, through the inverse of the g, we can enforce the upper and lower bound of sigma.
 
 ### 2b)
 
@@ -168,7 +184,9 @@ $$
 
 #### SOLUTION
 
-?  
+$$
+p(\mu, \sigma \mid \mathbf{x}) \propto \prod^N_{n=1}(normal(x_n \mid \mu,g^{-1} \left( \varphi \right))) \cdot normal(\mu \mid \mu_0, \tau_0) \cdot uniform(p(g^{-1} \left( \varphi \right) \mid l,u)) \cdot |\frac{d g^{-1} \left( \varphi \right)}{d\phi}|
+$$
 
 ### 2c)
 
@@ -208,11 +226,11 @@ info_inform_N05 <- list(
 
 *HINT*: the `info_inform_N05` list of information provides to you the names of the hyperparameter and observation variables to use in the `my_logpost()` function. This way all students will use the same nomenclature for evaluating the log-posterior.  
 
-*HINT*: The second code chunk below provides three test cases for you. If you correctly coded the `my_logpost()` function, the first test case which sets `unknowns = c(0, 0)` will yield a value of `76.75337`. The second test case which sets `unknowns = c(-1, -1)` yields a value of `-545.4938`. The third test case which sets `unknowns = c(1, 2)` yields a value of `-19.49936`. If you do not get three values very close to those printed here, there is a typo in your function.  
+*HINT*: The second code chunk below provides three test cases for you. If you correctly coded the `my_logpost()` function, the first test case which sets `unknowns = c(0, 0)` will yield a value of `-76.75337`. The second test case which sets `unknowns = c(-1, -1)` yields a value of `-545.4938`. The third test case which sets `unknowns = c(1, 2)` yields a value of `-19.49936`. If you do not get three values very close to those printed here, there is a typo in your function.  
 
 #### SOLUTION
 
-```{r, solution_02c, eval=FALSE}
+```{r, solution_02c, eval=TRUE}
 my_logpost <- function(unknowns, my_info)
 {
   # extrack the unknowns
@@ -220,28 +238,30 @@ my_logpost <- function(unknowns, my_info)
   lik_varphi <- unknowns[2]
   
   # backtransform to sigma
-  lik_sigma <- 
+  lik_sigma <- exp(lik_varphi)
   
   # calculate the log-likelihood
-  log_lik <- 
+  log_lik <- sum(dnorm(x = my_info$xobs,
+                   mean = lik_mu,
+                   sd = lik_sigma,
+                   log = TRUE))
   
   # calculate the log-prior on each parameter
-  log_prior_mu <- 
+  log_prior_mu <- dnorm(x = lik_mu, mean = my_info$mu_0, sd = my_info$tau_0, log = TRUE)
   
-  log_prior_sigma <- 
-  
+  log_prior_sigma <- dexp(x = lik_sigma, rate = my_info$sigma_rate, log = TRUE)
   # calculate the log-derivative adjustment due to the 
   # change-of-variables transformation
-  log_deriv_adjust <- 
+  log_deriv_adjust <- lik_varphi # sigma = e^phi -> d(sigma)/d(phi) = e^phi
   
   # sum all together
-  
+  log_lik + log_prior_mu + log_prior_sigma + log_deriv_adjust
 }
 ```
 
 Check test cases.  
 
-```{r, solution_02c_test, eval=FALSE}
+```{r, solution_02c_test, eval=TRUE}
 my_logpost(c(0, 0), info_inform_N05)
 
 my_logpost(c(-1, -1), info_inform_N05)
@@ -268,27 +288,30 @@ You will now make use of the `expand.grid()` function to create a grid of candid
 #### PROBLEM
 
 **Complete the code chunk below. The variables `mu_lwr` and `mu_upr` correspond to the lower and upper bounds in the grid for the unknown $\mu$ parameter. Specifiy the lower bound to be the 0.01 quantile (1st percentile) based on the prior on $\mu$. Specify the upper bound to the 0.99 quantile (99th percentile) based on the prior on $\mu$. The variables `varphi_lwr` and `varphi_upr` are the lower and upper bounds in the grid for the unknown $\varphi$ parameter. Specify the lower bound to be the log of the 0.01 quantile (1st percentile) based on the prior on $\sigma$. Specificy the upper bound to be the log of the 0.99 quantile(99th percentile) based on the prior on $\sigma$.**  
-**Create the grid of candidate values, `param_grid`, by setting the input vectors to the `expand.grid()` function to be 201 evenly spaced points between the defined lower bound and upper bounds on the paraemters.**  
+**Create the grid of candidate values, `param_grid`, by setting the input vectors to the `expand.grid()` function to be 201 evenly spaced points between the defined lower bound and upper bounds on the parameters.**  
 
 *HINT*: remember that probability density functions in `R` each have their own specific quantile functions...  
 
 #### SOLUTION
 
-```{r, solution_02d, eval=FALSE}
+```{r, solution_02d, eval=TRUE}
 ### bounds on mu
-mu_lwr <- 
-mu_upr <- 
+mu_lwr <- qnorm(0.01, info_inform_N05$mu_0, info_inform_N05$tau_0)
+mu_upr <- qnorm(0.99, info_inform_N05$mu_0, info_inform_N05$tau_0)
+
 
 ### bounds on varphi
-varphi_lwr <- 
-varphi_upr <- 
+varphi_lwr <- qexp(0.01, info_inform_N05$sigma_rate)
+varphi_upr <- qexp(0.99, info_inform_N05$sigma_rate)
 
 ### create the grid 
-param_grid <- expand.grid(mu = ,
-                          varphi = ,
+param_grid <- expand.grid(mu = seq(mu_lwr, mu_upr, length.out = 201),
+                          varphi = seq(varphi_lwr, varphi_upr, length.out = 201),
                           KEEP.OUT.ATTRS = FALSE,
                           stringsAsFactors = FALSE) %>% 
   as.data.frame() %>% tbl_df()
+
+param_grid
 ```
 
 ### 2e)
@@ -296,7 +319,7 @@ param_grid <- expand.grid(mu = ,
 The `my_logpost()` function accepts a vector as the first input argument, `unknowns`. Thus, you cannot simply pass in the separate columns of the `param_grid` data set. To overcome this, you will define a "wrapper" function, which manages the call to the log-posterior function. The wrapper, `eval_logpost()` is started for you in the code chunk below. The first argument to `eval_logpost()` is a value for the unknown mean, the second argument is a value to the unknown $\varphi$ parameter, the third argument is the desired log-posterior function, and the fourth argument is the list of required information.  
 
 This problem tests that you understand how to call a function, and how the input arguments to the log-posterior function are structured. You will need to understand that structure in order to perform the Laplace Approximation later on.  
-
+6
 #### PROBLEM
 
 **Complete the code chunk below such that the user supplied `my_func` function has the `mu_val` and `varphi_val` variables combined into a vector with the correct order.**  
@@ -305,14 +328,14 @@ This problem tests that you understand how to call a function, and how the input
 
 #### SOLUTION
 
-```{r, solution_02e, eval=FALSE}
+```{r, solution_02e, eval=TRUE}
 eval_logpost <- function(mu_val, varphi_val, my_func, my_info)
 {
-  my_func( , my_info)
+  my_func(c(mu_val, varphi_val), my_info)
 }
 ```
 
-```{r, solution_02e_b, eval=FALSE}
+```{r, solution_02e_b, eval=TRUE}
 log_post_inform_N05 <- purrr::map2_dbl(param_grid$mu,
                                        param_grid$varphi,
                                        eval_logpost,
@@ -353,10 +376,10 @@ viz_logpost_surface <- function(log_post_result, grid_values)
 #### SOLUTION
 
 ```{r, solution_02f, eval=FALSE}
-viz_logpost_surface( )
+viz_logpost_surface(log_post_result = log_post_inform_N05, grid_values = param_grid)
 ```
 
-?  
+values 5 to 10 for $\varphi$ are completely ruled out, -0.5 seems to be the most probable value for $\mu$
 
 ### 2g)
 
@@ -388,31 +411,31 @@ info_inform_N405 <- list(
 
 #### SOLUTION
 
-```{r, solution_02g_a, eval=FALSE}
+```{r, solution_02g_a, eval=TRUE}
 ### check the arguments from param_grid!!!
-log_post_inform_N45 <- purrr::map2_dbl(param_grid$,
-                                       param_grid$,
+log_post_inform_N45 <- purrr::map2_dbl(param_grid$mu,
+                                       param_grid$varphi,
                                        eval_logpost,
                                        my_func = my_logpost,
-                                       my_info = )
+                                       my_info = info_inform_N45)
 
 ### check the arguments from param_grid!!!
-log_post_inform_N405 <- purrr::map2_dbl(param_grid$,
-                                        param_grid$,
+log_post_inform_N405 <- purrr::map2_dbl(param_grid$mu,
+                                        param_grid$varphi,
                                         eval_logpost,
                                         my_func = my_logpost,
                                         my_info = info_inform_N405)
 ```
 
-```{r, solution_02g_b, eval=FALSE}
-viz_logpost_surface( )
+```{r, solution_02g_b, eval=TRUE}
+viz_logpost_surface(log_post_inform_N45, param_grid)
 ```
 
-```{r, solution_02g_c, eval=FALSE}
-viz_logpost_surface( )
+```{r, solution_02g_c, eval=TRUE}
+viz_logpost_surface(log_post_inform_N405, param_grid)
 ```
 
-?  
+As the sample size increases, the log-posterior surface becomes more gaussian looking around the posterior mode. Yes both parameters shift as the sample size increases. The uncertainty also decreases contour-line area shrinks. 
 
 ## Problem 3
 
@@ -436,23 +459,23 @@ init_guess_02 <- c(2, 2)
 #### SOLUTION
 
 ```{r, solution_03_a, eval=FALSE}
-map_res_01 <- optim(,
-                    ,
-                    gr = ,
-                    ,
-                    method = ,
-                    hessian = ,
-                    control = )
+map_res_01 <- optim(init_guess_01,
+                    my_logpost,
+                    gr = NULL,
+                    info_inform_N05,
+                    method = 'BFGS',
+                    hessian = TRUE,
+                    control = list(fnscale = -1, maxit = 1001))
 ```
 
 ```{r, solution_03_b, eval=FALSE}
-map_res_02 <- optim(,
-                    ,
-                    gr = ,
-                    ,
-                    method = ,
-                    hessian = ,
-                    control = )
+map_res_02 <- optim(init_guess_02,
+                    my_logpost,
+                    gr = NULL,
+                    info_inform_N05,
+                    method = 'BFGS',
+                    hessian = TRUE,
+                    control = list(fnscale = -1, maxit = 1001))
 ```
 
 ### 3b)
