@@ -155,14 +155,7 @@ You will be applying the Laplace Approximation to learn the unknown $\mu$ and $\
 
 #### SOLUTION
 
-The change-of-variable of sigma to phi is via the inverse of logit function: 
-$$
-logit(\frac{\sigma - l}{u - l}) = g(\sigma) = \varphi
-$$
-$$
-\sigma = logit^{-1}(\phi) \cdot (u - l) + l = g^{-1}(\phi)
-$$
-Thus, through the inverse of the g, we can enforce the upper and lower bound of sigma.
+Since Laplace Approximation is strictly symmetric, in its MVN the sigma values ranges from negative infinity to positive infinity. Yet our log-posterior surface disallows sigmas that are negative. Thus, we need to find some method to allow unbounded sigmas in our log-possterior surface. 
 
 ### 2b)
 
@@ -301,8 +294,8 @@ mu_upr <- qnorm(0.99, info_inform_N05$mu_0, info_inform_N05$tau_0)
 
 
 ### bounds on varphi
-varphi_lwr <- qexp(0.01, info_inform_N05$sigma_rate)
-varphi_upr <- qexp(0.99, info_inform_N05$sigma_rate)
+varphi_lwr <- log(qexp(0.01, info_inform_N05$sigma_rate))
+varphi_upr <- log(qexp(0.99, info_inform_N05$sigma_rate))
 
 ### create the grid 
 param_grid <- expand.grid(mu = seq(mu_lwr, mu_upr, length.out = 201),
@@ -458,7 +451,7 @@ init_guess_02 <- c(2, 2)
 
 #### SOLUTION
 
-```{r, solution_03_a, eval=FALSE}
+```{r, solution_03_a, eval=TRUE}
 map_res_01 <- optim(init_guess_01,
                     my_logpost,
                     gr = NULL,
@@ -466,9 +459,10 @@ map_res_01 <- optim(init_guess_01,
                     method = 'BFGS',
                     hessian = TRUE,
                     control = list(fnscale = -1, maxit = 1001))
+map_res_01
 ```
 
-```{r, solution_03_b, eval=FALSE}
+```{r, solution_03_b, eval=TRUE}
 map_res_02 <- optim(init_guess_02,
                     my_logpost,
                     gr = NULL,
@@ -476,12 +470,12 @@ map_res_02 <- optim(init_guess_02,
                     method = 'BFGS',
                     hessian = TRUE,
                     control = list(fnscale = -1, maxit = 1001))
+map_res_02
 ```
 
 ### 3b)
 
-You tried two different starting guesses...will you get the same optimized results?  
-
+You tried two different starting guesses...will you get the same optimized results? 
 #### PROBLEM
 
 **Compare the two optimization results from Problem 3a). Are the identified optimal parameter values the same? Are the Hessian matrices the same? Was anything different?**  
@@ -489,8 +483,9 @@ You tried two different starting guesses...will you get the same optimized resul
 **What about the log-posterior surface gave you a hint about how the two results would compare?**  
 
 #### SOLUTION
+both optimization results, including the parameters, and the hessian matrices are largely the same. The difference between them is number of calls fn and gr. Two different init guesses require two different numbers of iterations. 
 
-Your solution here.  
+Since our log-posterior surface is unimodal, it is reasonable to expect two optim calls to reach a singular mode value. Since our initial guesses start from different areas in the posterior graph. It is only natural for them to reach the mode with different iterations of approximation.
 
 ### 3c)
 
@@ -502,25 +497,25 @@ Finding the mode is the first step in the Laplace Approximation. The second step
 
 #### SOLUTION
 
-```{r, solution_03c, eval=FALSE}
+```{r, solution_03c, eval=TRUE}
 my_laplace <- function(start_guess, logpost_func, ...)
 {
   # code adapted from the `LearnBayes`` function `laplace()`
-  fit <- optim(,
-               ,
+  fit <- optim(start_guess,
+               logpost_func,
                gr = NULL,
                ...,
                method = "BFGS",
                hessian = TRUE,
                control = list(fnscale = -1, maxit = 1001))
   
-  mode <- 
-  h <- 
+  mode <- fit$par
+  h <- -solve(fit$hessian)
   p <- length(mode)
   # we will discuss what int means in a few weeks...
   int <- p/2 * log(2 * pi) + 0.5 * log(det(h)) + logpost_func(mode, ...)
-  list(mode = ,
-       var_matrix = ,
+  list(mode = mode,
+       var_matrix = h,
        log_evidence = int,
        converge = ifelse(fit$convergence == 0,
                          "YES", 
@@ -539,14 +534,17 @@ You now have all of the pieces in place to perform the Laplace Approximation. Ex
 
 #### SOLUTION
 
-```{r, solution_03d, eval=FALSE}
-laplace_res_inform_N05 <- my_laplace( )
+```{r, solution_03d, eval=TRUE}
+laplace_res_inform_N05 <- my_laplace(init_guess_01, my_logpost, info_inform_N05)
 
-laplace_res_inform_N45 <- my_laplace( )
+laplace_res_inform_N45 <- my_laplace(init_guess_01, my_logpost, info_inform_N45)
 
-laplace_res_inform_N405 <- my_laplace( )
+laplace_res_inform_N405 <- my_laplace(init_guess_01, my_logpost, info_inform_N405)
 
 ### check if they eached converged
+laplace_res_inform_N05
+laplace_res_inform_N45
+laplace_res_inform_N405
 ```
 
 ### 3e)
@@ -561,15 +559,16 @@ The code chunk below defines the `generate_post_samples()` function for you. The
 
 #### SOLUTION
 
-```{r, solution_03e, eval=FALSE}
+```{r, solution_03e, eval=TRUE}
 generate_post_samples <- function(mvn_info, N)
 {
-  MASS::mvrnorm(n = N, 
+    MASS::mvrnorm(n = N, 
                 mu = mvn_info$mode, 
                 Sigma = mvn_info$var_matrix) %>% 
     as.data.frame() %>% tbl_df() %>% 
     purrr::set_names(c("mu", "varphi")) %>% 
-    mutate(sigma = ) ### backtransform to sigma!!!
+    mutate(sigma = exp(varphi)) ### backtransform to sigma!!!
+  
 }
 ```
 
@@ -577,7 +576,7 @@ generate_post_samples <- function(mvn_info, N)
 
 1e4 posterior samples based on the 3 different observation sample sizes are generated for you in the code chunk below.  
 
-```{r, create_post_samples_all, eval=FALSE}
+```{r, create_post_samples_all, eval=TRUE}
 set.seed(200121)
 post_samples_inform_N05 <- generate_post_samples(laplace_res_inform_N05, N = 1e4)
 post_samples_inform_N45 <- generate_post_samples(laplace_res_inform_N45, N = 1e4)
@@ -592,7 +591,11 @@ You will summarize the posterior samples and visualize the posterior marginal hi
 
 #### SOLUTION
 
-Your solution here.  
+```{r, solution_03f, eval=TRUE}
+post_samples_inform_N05 %>% summary()
+post_samples_inform_N45 %>% summary()
+post_samples_inform_N405 %>% summary()
+```
 
 ### 3g)
 
@@ -600,11 +603,23 @@ Another benefit of working with posterior samples rather than the posterior dens
 
 #### PROBLEM
 
-**What is the posterior probability that $\mu$ is positive for each of the three observation sample sizes? What are the 0.05 and 0.95 quantiles on $\sigma$ for each of the three observation sample sizes?**  
+**What is the posterior robability that $\mu$ is positive for each of the three observation sample sizes? What are the 0.05 and 0.95 quantiles on $\sigma$ for each of the three observation sample sizes?**  
 
 #### SOLUTION
 
-Your solution here.  
+```{r, solution_03g, eval=TRUE}
+
+sum(post_samples_inform_N05$mu > 0) / nrow(post_samples_inform_N05)
+sum(post_samples_inform_N45$mu > 0) / nrow(post_samples_inform_N45)
+sum(post_samples_inform_N405$mu > 0) / nrow(post_samples_inform_N405)
+
+
+post_samples_inform_N05$sigma %>% quantile(c(0.05, 0.95))
+post_samples_inform_N45$sigma %>% quantile(c(0.05, 0.95))
+post_samples_inform_N405$sigma %>% quantile(c(0.05, 0.95))
+
+
+```
 
 ## Problem 4
 
