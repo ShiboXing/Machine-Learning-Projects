@@ -1,7 +1,7 @@
 ---
 title: 'CS 1675 Homework: 03'
 subtitle: 'Assigned: February 3, 2020; Due: February 17, 2020'
-author: "Your name here"
+author: "Shibo Xing"
 date: "Submission time: February 17, 2020 at 9:00PM"
 output: pdf_document
 ---
@@ -12,7 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Include the names of your collaborators here.  
+Ziyi Gong
+Tanner Stauffer
+Nur Iren
 
 ## Overview
 
@@ -38,8 +40,7 @@ You are tasked by a manufacturing company to study the variability of a componen
 The data set that you will work with is loaded in the code chunk below and assigned to the `df_01` object. As the `glimpse()` function shows, `df_01` consists of two variables, `obs_id` and `x`. There are 405 rows or observations. `obs_id` is the "observation index" and `x` is the measured value.  
 
 ```{r, load_df_01_data, eval=TRUE}
-df_01 <- readr::read_csv("https://raw.githubusercontent.com/jyurko/CS_1675_Spring_2020/master/hw_data/hw03/df_01.csv", 
-                         col_names = TRUE)
+df_01 <- readr::read_csv("https://raw.githubusercontent.com/jyurko/CS_1675_Spring_2020/master/hw_data/hw03/df_01.csv", col_names = TRUE)
 
 df_01 %>% glimpse()
 ```
@@ -60,9 +61,8 @@ Let's start out by visualizing and summarizing the available measurements.
 df_01 %>% ggplot(mapping = aes(x = obs_id, y = x)) +
   geom_line() +
   geom_point()
-
 ```
-
+Most values appear to be gaussian distributed, there are only 1 or 2 outliers.
 ### 1b)
 
 #### PROBLEM
@@ -97,7 +97,7 @@ df_01$x %>% quantile(probs = c(0.05, 0.95))
 df_01$x %>% sd()
 ```
 
-?  
+Yes, the median is very close to 0.5, as indicated by both graphs. The histogram's display is also in-line with the Quartile information shown in the summary.
 
 ### 1d)
 
@@ -119,6 +119,7 @@ df_01 %>% mutate(rolling_avg = cummean(df_01$x)) %>%
   geom_line() 
 
 ```
+The 0 to the 100 appears the most variable, it become steady after about 100.
 
 ### 1e)
 
@@ -178,7 +179,7 @@ $$
 #### SOLUTION
 
 $$
-p(\mu, \sigma \mid \mathbf{x}) \propto \prod^N_{n=1}(normal(x_n \mid \mu,g^{-1} \left( \varphi \right))) \cdot normal(\mu \mid \mu_0, \tau_0) \cdot uniform(p(g^{-1} \left( \varphi \right) \mid l,u)) \cdot |\frac{d g^{-1} \left( \varphi \right)}{d\phi}|
+p(\mu, \sigma \mid \mathbf{x}) \propto \prod^N_{n=1}(normal(x_n \mid \mu,g^{-1} \left( \varphi \right))) \cdot p(\mu \mid \mu_0, \tau_0) \cdot p(g^{-1}(\varphi)) \cdot |\frac{d g^{-1} \left( \varphi \right)}{d\phi}|
 $$
 
 ### 2c)
@@ -343,6 +344,7 @@ The code chunk below defines the `viz_logpost_surface()` function for you. It ge
 ```{r, make_logpost_surface_viz, eval=TRUE}
 viz_logpost_surface <- function(log_post_result, grid_values)
 {
+  
   gg <- grid_values %>% 
     mutate(log_dens = log_post_result) %>% 
     mutate(log_dens_2 = log_dens - max(log_dens)) %>% 
@@ -368,11 +370,11 @@ viz_logpost_surface <- function(log_post_result, grid_values)
 
 #### SOLUTION
 
-```{r, solution_02f, eval=FALSE}
+```{r, solution_02f, eval=TRUE}
 viz_logpost_surface(log_post_result = log_post_inform_N05, grid_values = param_grid)
 ```
 
-values 5 to 10 for $\varphi$ are completely ruled out, -0.5 seems to be the most probable value for $\mu$
+ $\varphi$ less than about 0.5 is completely ruled out, -0.5 seems to be the most probable value for $\mu$
 
 ### 2g)
 
@@ -595,7 +597,32 @@ You will summarize the posterior samples and visualize the posterior marginal hi
 post_samples_inform_N05 %>% summary()
 post_samples_inform_N45 %>% summary()
 post_samples_inform_N405 %>% summary()
+
+post_samples_inform_N05 %>% 
+  ggplot(mapping = aes(x = mu)) + 
+  geom_histogram(bins = 25)
+post_samples_inform_N05 %>% 
+  ggplot(mapping = aes(x = sigma)) + 
+  geom_histogram(bins = 25)
+
+
+post_samples_inform_N45 %>% 
+  ggplot(mapping = aes(x = mu)) + 
+  geom_histogram(bins = 25)
+post_samples_inform_N45 %>% 
+  ggplot(mapping = aes(x = sigma)) + 
+  geom_histogram(bins = 25)
+
+post_samples_inform_N405 %>% 
+  ggplot(mapping = aes(x = mu)) + 
+  geom_histogram(bins = 25)
+post_samples_inform_N405 %>% 
+  ggplot(mapping = aes(x = sigma)) + 
+  geom_histogram(bins = 25)
+
+
 ```
+the standard deviation of both the mu and sigma shrinks as the observation count increases.
 
 ### 3g)
 
@@ -608,12 +635,12 @@ Another benefit of working with posterior samples rather than the posterior dens
 #### SOLUTION
 
 ```{r, solution_03g, eval=TRUE}
-
+#the probability of mu > 0
 sum(post_samples_inform_N05$mu > 0) / nrow(post_samples_inform_N05)
 sum(post_samples_inform_N45$mu > 0) / nrow(post_samples_inform_N45)
 sum(post_samples_inform_N405$mu > 0) / nrow(post_samples_inform_N405)
 
-
+#0.05 and 0.95 quantiles of sigma
 post_samples_inform_N05$sigma %>% quantile(c(0.05, 0.95))
 post_samples_inform_N45$sigma %>% quantile(c(0.05, 0.95))
 post_samples_inform_N405$sigma %>% quantile(c(0.05, 0.95))
@@ -623,7 +650,7 @@ post_samples_inform_N405$sigma %>% quantile(c(0.05, 0.95))
 
 ## Problem 4
 
-In this problem you get first hand experience working with the `lm()` function in `R`. You will make use of that function to fit simple to complex models on low and high noise data sets. You will then use cross-validation to  assess if the models are overfitting to a training set.  
+In this problem you get first hand experience working with the `lm()` function in `R`. You will make use of that function to fit simple to complex models on low and high noise data sets. You will then use cross-validation to assess if the models are overfitting to a training set.  
 
 Two data sets are in for you in the code chunks below. Both consist of an input `x` and a continuous response `y`. The two data sets are synthetic. Both come from the same underlying true functional form. The true functional form is not given to you. You are given random observations generated around that true functional form. The `df_02_low` data set corresponds to a random observations with low noise, while the `df_02_high` data set corresponds to random observations with high noise.  
 
@@ -639,7 +666,6 @@ Show a glimpse of each data set below.
 
 ```{r, show_df_02_glimpse, eval=TRUE}
 df_02_low %>% glimpse()
-
 df_02_high %>% glimpse()
 ```
 
@@ -653,7 +679,14 @@ Create scatter plots in `ggplot2` between the response `y` and the input `x`.
 
 #### SOLUTION
 
-Your solution here.  
+```{r, solution_04g, eval=TRUE}
+df_02_high %>% ggplot(mapping = aes(x = x, y = y)) +
+  geom_point()
+
+df_02_low %>% ggplot(mapping = aes(x = x, y = y)) +
+  geom_point()
+```
+the functional form looks like a quadratic function
 
 ### 4b)
 
@@ -675,22 +708,26 @@ The `~` operator reads as "is a function of". Thus, the term to the left of `~` 
 
 The low noise case models are given below.  
 
-```{r, solution_04b_a, eval=FALSE}
-mod_low_linear <- 
+```{r, solution_04b_a, eval=TRUE}
+mod_low_linear <- lm(y ~ I(x) , df_02_low)
+mod_low_linear 
 
-mod_low_quad <- 
+mod_low_quad <- lm(y ~ I(x^2) + I(x), df_02_low)
+mod_low_quad
 
-mod_low_8th <- 
+mod_low_8th <- lm(y ~ I(x^8) + I(x^7) + I(x^6) + I(x^5) +
+                    I(x^4) + I(x^3) + I(x^2) + I(x), df_02_low)
 ```
 
 The high noise case models are given in the code chunk below.  
 
-```{r, solution_04b_b, eval=FALSE}
-mod_high_linear <- 
+```{r, solution_04b_b, eval=TRUE}
+mod_high_linear <- lm(y ~ I(x), df_02_high)
 
-mod_high_quad <- 
+mod_high_quad <- lm(y ~ I(x^2) + I(x), df_02_high)
 
-mod_high_8th <- 
+mod_high_8th <- lm(y ~ I(x^8) + I(x^7) + I(x^6) + I(x^5) +
+                    I(x^4) + I(x^3) + I(x^2) + I(x), df_02_high)
 ```
 
 ### 4c)
@@ -703,7 +740,17 @@ There are many different approaches to inspect the results of `lm()`. A straight
 
 #### SOLUTION
 
-Your solution here.  
+```{r, solution_4c}
+mod_low_linear %>% summary()
+mod_low_quad %>% summary()
+mod_low_8th %>% summary()
+
+mod_high_linear %>% summary()
+mod_high_quad %>% summary()
+mod_high_8th %>% summary()
+```
+For the low-noise data, the 8th-order model has the highest R squared.
+For the high-noise case, the 8th-order model also has the highest R squared.
 
 ### 4d)
 
@@ -727,18 +774,18 @@ library(modelr)
 
 The low noise case RMSEs are calculated below.  
 
-```{r, solution_04d_a, eval=FALSE}
-modelr::rmse( )
-modelr::rmse( )
-modelr::rmse( )
+```{r, solution_04d_a, eval=TRUE}
+modelr::rmse(mod_low_linear, df_02_low)
+modelr::rmse(mod_low_quad, df_02_low)
+modelr::rmse(mod_low_8th, df_02_low)
 ```
 
 The high noise case RMSEs are calculated below.  
 
-```{r, solution_04d_b, eval=FALSE}
-modelr::rmse( )
-modelr::rmse( )
-modelr::rmse( )
+```{r, solution_04d_b, eval=TRUE}
+modelr::rmse(mod_high_linear, df_02_high)
+modelr::rmse(mod_high_quad, df_02_high)
+modelr::rmse(mod_high_8th, df_02_high)
 ```
 
 ### 4e)
@@ -780,22 +827,22 @@ By storing pointers, the resample objects are rather memory efficient. We can ma
 
 The fold training sets should be specified in the code chunk below.  
 
-```{r, solution_04e_a, eval=FALSE}
-low_noise_train_fold_01 <- 
-low_noise_train_fold_02 <- 
-low_noise_train_fold_03 <- 
-low_noise_train_fold_04 <- 
-low_noise_train_fold_05 <- 
+```{r, solution_04e_a, eval=TRUE}
+low_noise_train_fold_01 <- as.data.frame(cv_info_k05_low$train[[1]])
+low_noise_train_fold_02 <- as.data.frame(cv_info_k05_low$train[[2]])
+low_noise_train_fold_03 <- as.data.frame(cv_info_k05_low$train[[3]])
+low_noise_train_fold_04 <- as.data.frame(cv_info_k05_low$train[[4]])
+low_noise_train_fold_05 <- as.data.frame(cv_info_k05_low$train[[5]])
 ```
 
 The fold test sets should be specified in the code chunk below.  
 
-```{r, solution_04_e_b, eval=FALSE}
-low_noise_test_fold_01 <-
-low_noise_test_fold_02 <-
-low_noise_test_fold_03 <-
-low_noise_test_fold_04 <- 
-low_noise_test_fold_05 <- 
+```{r, solution_04_e_b, eval=TRUE}
+low_noise_test_fold_01 <- as.data.frame(cv_info_k05_low$test[[1]])
+low_noise_test_fold_02 <- as.data.frame(cv_info_k05_low$test[[2]])
+low_noise_test_fold_03 <- as.data.frame(cv_info_k05_low$test[[3]])
+low_noise_test_fold_04 <- as.data.frame(cv_info_k05_low$test[[4]])
+low_noise_test_fold_05 <- as.data.frame(cv_info_k05_low$test[[5]])
 ```
 
 ### 4f)
@@ -810,30 +857,34 @@ With the training and test splits available, now it's time to train the models o
 
 The quadratic relationship fits should be specified below.  
 
-```{r, solution_04f_a, eval=FALSE}
-mod_low_quad_fold_01 <- 
+```{r, solution_04f_a, eval=TRUE}
+f_quad <- y ~ I(x ^ 2) + I(x)
+mod_low_quad_fold_01 <- lm(f_quad, low_noise_train_fold_01)
 
-mod_low_quad_fold_02 <- 
+mod_low_quad_fold_02 <- lm(f_quad, low_noise_train_fold_02)
 
-mod_low_quad_fold_03 <- 
+mod_low_quad_fold_03 <- lm(f_quad, low_noise_train_fold_03)
 
-mod_low_quad_fold_04 <- 
+mod_low_quad_fold_04 <- lm(f_quad, low_noise_train_fold_04)
 
-mod_low_quad_fold_05 <- 
+mod_low_quad_fold_05 <- lm(f_quad, low_noise_train_fold_05)
 ```
 
 The 8th order polynomial fits should be specified below.  
 
-```{r, solution_04f_b, eval=FALSE}
-mod_low_8th_fold_01 <- 
+```{r, solution_04f_b, eval=TRUE}
+f_8th <- y ~ I(x^8) + I(x^7) + I(x^6) + I(x^5) + I(x^4) + I(x^3) +
+  I(x^2) + I(x)
 
-mod_low_8th_fold_02 <- 
+mod_low_8th_fold_01 <- lm(f_8th, low_noise_train_fold_01)
 
-mod_low_8th_fold_03 <- 
+mod_low_8th_fold_02 <- lm(f_8th, low_noise_train_fold_02)
 
-mod_low_8th_fold_04 <- 
+mod_low_8th_fold_03 <- lm(f_8th, low_noise_train_fold_03)
 
-mod_low_8th_fold_05 <- 
+mod_low_8th_fold_04 <- lm(f_8th, low_noise_train_fold_04)
+
+mod_low_8th_fold_05 <- lm(f_8th, low_noise_train_fold_05)
 ```
 
 ### 4g)
@@ -847,7 +898,23 @@ Let's compare the RMSE of the quadratic relationship to the 8th order polynomial
 **Calculate the average RMSE across the 5-folds for both relationships. Which relationship has the lowest average RMSE?**  
 
 #### SOLUTION
-Your solution here.  
+```{r, solution_4g}
+cv_low_quad_fold_train_rmse <- c(modelr::rmse(mod_low_quad_fold_01, low_noise_train_fold_01),
+                                modelr::rmse(mod_low_quad_fold_02, low_noise_train_fold_02),
+                                modelr::rmse(mod_low_quad_fold_03, low_noise_train_fold_03),
+                                modelr::rmse(mod_low_quad_fold_04, low_noise_train_fold_04),
+                                modelr::rmse(mod_low_quad_fold_05, low_noise_train_fold_05))
+
+cv_low_8th_fold_train_rmse <- c(modelr::rmse(mod_low_8th_fold_01, low_noise_train_fold_01),
+                                modelr::rmse(mod_low_8th_fold_02, low_noise_train_fold_02),
+                                modelr::rmse(mod_low_8th_fold_03, low_noise_train_fold_03),
+                                modelr::rmse(mod_low_8th_fold_04, low_noise_train_fold_04),
+                                modelr::rmse(mod_low_8th_fold_05, low_noise_train_fold_05))
+
+mean(cv_low_quad_fold_train_rmse)
+mean(cv_low_8th_fold_train_rmse)
+```
+the 8th order model, which is the more complex model, has the lower average RMSE
 
 ### 4h)
 
@@ -858,5 +925,22 @@ Now, it's time to compare the quadratic and 8th order polynomial performance in 
 **Calculate the test split RMSEs for each fold for the quadratic and 8th order polynomial. Assign the results to `cv_low_quad_fold_test_rmse` and `cv_low_8th_fold_test_rmse`, for the quadratic and 8th order polynomial, respectively. Which relationship has the lowest average cross-validation RMSE on the test splits?**  
 
 #### SOLUTION
+```{r, solution_4h}
+cv_low_quad_fold_test_rmse <- c(modelr::rmse(mod_low_quad_fold_01, low_noise_test_fold_01),
+                                modelr::rmse(mod_low_quad_fold_02, low_noise_test_fold_02),
+                                modelr::rmse(mod_low_quad_fold_03, low_noise_test_fold_03),
+                                modelr::rmse(mod_low_quad_fold_04, low_noise_test_fold_04),
+                                modelr::rmse(mod_low_quad_fold_05, low_noise_test_fold_05))
 
-Your response here.  
+cv_low_8th_fold_test_rmse <- c(modelr::rmse(mod_low_8th_fold_01, low_noise_test_fold_01),
+                                modelr::rmse(mod_low_8th_fold_02, low_noise_test_fold_02),
+                                modelr::rmse(mod_low_8th_fold_03, low_noise_test_fold_03),
+                                modelr::rmse(mod_low_8th_fold_04, low_noise_test_fold_04),
+                                modelr::rmse(mod_low_8th_fold_05, low_noise_test_fold_05))
+
+
+mean(cv_low_quad_fold_test_rmse)
+mean(cv_low_8th_fold_test_rmse)
+
+```
+the quadratic relationship has the lower avergae cross-validation RMSE.  
