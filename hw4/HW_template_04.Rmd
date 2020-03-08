@@ -170,7 +170,6 @@ lm_logpost <- function(unknowns, my_info)
 
 ```{r, solution_01c_b, eval=TRUE}
 lm_logpost(c(-1, -1, -1), info_01)
-
 lm_logpost(c(1, 1, 1), info_01)
 ```
 
@@ -262,7 +261,7 @@ Create the posterior histogram on $\beta_1$.
 ```{r, solution_01e_c, eval=TRUE}
 post_samples_01 %>% 
   ggplot() +
-  geom_histogram(mapping = aes(x = beta_01))
+  geom_histogram(bins = 55, mapping = aes(x = beta_01))
 ```
 
 The posterior probability that the slope is greater than zero is:  
@@ -347,13 +346,13 @@ post_pred_samples_01 <- make_post_lm_pred(Xmat_01, post_samples_01)
 The dimensionality of the posterior predicted mean trend matrix is:  
 
 ```{r, solution_02b_b, eval=TRUE}
-post_pred_samples_01$Umat %>% dim()
+post_pred_samples_01$Umat %>% dim
 ```
 
 The dimensionality of the posterior predicted response matrix is:  
 
 ```{r, solution_02b_c, eval=TRUE}
-post_pred_samples_01$Ymat %>% dim()
+post_pred_samples_01$Ymat %>% dim
 ```
 
 ### 2c)
@@ -493,7 +492,7 @@ You have calculated the MAE associated with each posterior sample, and thus repr
 
 Calculate the quantiles of the MAE below.  
 
-```{r, solution_02g, eval=FALSE}
+```{r, solution_02g, eval=TRUE}
 MAE_01 %>% quantile
 ```
 
@@ -702,7 +701,7 @@ calc_mae_from_laplace <- function(mvn_result, Xtrain, Xtest, y_train, y_test, nu
   # calculate the error between the training set predictions
   # and the training set observations
   error_train <- pred_train$Umat - y_train
-  
+
   # calculate the error between the test set predictions
   # and the test set observations
   error_test <- pred_test$Umat - y_test
@@ -744,8 +743,10 @@ all_spline_mae_results <- purrr::pmap_dfr(list(all_spline_models,
                                           y_train = train_02$y,
                                           y_test = test_02$y,
                                           num_samples = 2500 )
-all_spline_mae_results %>% dim
-all_spline_mae_results
+
+# all_spline_models
+# all_spline_mae_results %>% dim
+# all_spline_mae_results
 
 ```
 
@@ -775,8 +776,11 @@ all_spline_mae_results %>% ggplot(mapping = aes(x = as.factor(J), y = mae)) +
 Summarize the posterior samples on the MAE on the training and test sets by focusing on the posterior median MAE values.  
 
 ```{r, solution_03e_b, eval=TRUE}
-filter(all_spline_mae_results, dataset == 'training')$mae %>% summary
-filter(all_spline_mae_results, dataset == 'test')$mae %>% summary
+all_spline_mae_results %>% filter(J > 3) %>% ggplot(mapping = aes(x = J, y = mae)) +
+                                                    stat_summary(geom = 'line', fun.y = 'median') +
+                                                    facet_wrap(facets = ~ dataset)
+                                    
+
 ```
 
 splines of order 6 or higher seem to overfit the observations. 
@@ -846,7 +850,7 @@ You are allowed to separate each equation into its own equation block.
 $$
 \begin{aligned}
 \boldsymbol{\eta_n} = \mathbf{x}_{n,:} \boldsymbol{\beta} \\
-p(\boldsymbol{\beta}) = \prod_{d=1}^{D}(normal(\boldsymbol{\beta_d}|\boldsymbol(\mu_\beta, \tau_\beta)))\\
+p(\boldsymbol{\beta}) = \prod_{d=1}^{D+1}(normal(\boldsymbol{\beta_d}|\boldsymbol(\mu_\beta, \tau_\beta)))\\
 y|\beta_0, \beta_1, x \propto \prod_{n=1}^{N}(Bernoulli(y_n|logit^{-1}[\boldsymbol{\eta_n}]) p(\boldsymbol{\beta}) 
 \end{aligned}
 $$
@@ -923,7 +927,7 @@ You will now define the log-posterior function for logistic regression, `glm_log
 
 No I do not need to separate out the beta parameters because the priors of mu and tau are already specified my_info. unknowns vector only consists of the beta coefficients
 
-```{r, solution_04c_a, eval=FALSE}
+```{r, solution_04c_a, eval=TRUE}
 glm_logpost <- function(unknowns, my_info)
 {
   # extract the design matrix and assign to X
@@ -997,7 +1001,7 @@ Let's compare the performance of the models using the Evidence-based assessment.
 
 #### SOLUTION
 
-```{r, solution_04e, eval=FALSE}
+```{r, solution_04e, eval=TRUE}
 laplace_03_line$log_evidence %>% exp / laplace_03_cube$log_evidence %>% exp
 ```
 
@@ -1015,7 +1019,7 @@ You will now spend a little more time with the cubic relationship results. Calcu
 
 ?  
 
-```{r, solution_04f, eval=FALSE}
+```{r, solution_04f, eval=TRUE}
 laplace_03_cube$var_matrix %>% cov2cor
 ```
 
@@ -1037,7 +1041,7 @@ Although you were able to apply the `my_laplace()` function to both the regressi
 
 #### SOLUTION
 
-Since generate_lm_post_samples takes in a mvn_result where the mode's parameters contain also the standard deviation.
+Because generate_lm_post_samples takes in a mvn_result where the mode's parameters contain also the standard deviation, our mvn_result's mode only consists of beta parameters.
 
 ```{r, solution_05a, eval=TRUE}
 generate_glm_post_samples <- function(mvn_result, num_samples)
@@ -1206,17 +1210,17 @@ You will use the `ifelse()` function to compare the posterior predicted mean eve
 
 #### SOLUTION
 
-```{r, solution_05e, eval=FALSE}
-post_pred_summary_03_line_b <- 
+```{r, solution_05e, eval=TRUE}
+post_pred_summary_03_line_b <- post_pred_summary_03_line %>% mutate(pred_y = ifelse(mu_avg > 0.5, 1, 0))
 
-post_pred_summary_03_cube_b <- 
+post_pred_summary_03_cube_b <- post_pred_summary_03_cube %>% mutate(pred_y = ifelse(mu_avg > 0.5, 1, 0))
 ```
 
 ### 5f)
 
 The code chunk below uses the `left_join()` function to merge the training data set, `train_03` with each of the posterior prediction summary objects. The results, `post_pred_summary_03_line_c` and `post_pred_summary_03_cube_c` both now have predicted classifications, `pred_y`, and observed outcomes `y`.  
 
-```{r, merge_preds_and_train_obs_03, eval=FALSE}
+```{r, merge_preds_and_train_obs_03, eval=TRUE}
 post_pred_summary_03_line_c <- post_pred_summary_03_line_b %>% 
   left_join(train_03 %>% tibble::rowid_to_column("pred_id"),
             by = "pred_id")
@@ -1234,15 +1238,19 @@ You now have everything you need to calculate the confusion matrix for the linea
 
 #### SOLUTION
 
-?  
 
-```{r, solution_05f, eval=FALSE}
+```{r, solution_05f, eval=TRUE}
 ### confusion matrix for the linear relationship
+labels = c('true negative', 'false negative', 'false positive', 'true positive')
+mt_line = post_pred_summary_03_line_c %>% count(pred_y, y)
+mt_line %>% mutate('label' = labels)
 ```
 
-?  
 
-```{r, solution_05f_b, eval=FALSE}
+```{r, solution_05f_b, eval=TRUE}
 ### confusion matrix for the cubic relationshiop
+labels = c('true negative', 'false negative', 'false positive', 'true positive')
+mt_cube = post_pred_summary_03_cube_c %>% count(pred_y, y)
+mt_cube %>% mutate('label' = labels)
 ```
 
