@@ -988,14 +988,16 @@ Calculate the posterior middle 95% uncertainty interval on the parameters associ
 ```{r, solution_04d_b, eval=TRUE}
 
 sigma = laplace_03_line$var_matrix %>% diag %>% sqrt
-pnorm(0.95, laplace_03_line$mode, sigma) - pnorm(0.05, laplace_03_line$mode, sigma)
+pnorm(0.975, laplace_03_line$mode, sigma)
+pnorm(0.025, laplace_03_line$mode, sigma)
 
 sigma = laplace_03_cube$var_matrix %>% diag %>% sqrt
-pnorm(0.95, laplace_03_cube$mode, sigma) - pnorm(0.05, laplace_03_cube$mode, sigma)
-# laplace_03_line$mode %>% quantile(seq(0.05, 0.95, 0.9))
-# laplace_03_cube$mode %>% quantile(seq(0.05, 0.95, 0.9))
+pnorm(0.975, laplace_03_cube$mode, sigma)
+pnorm(0.025, laplace_03_cube$mode, sigma)
+# laplace_03_line$mode %>% quantile(seq(0.025, 0.975, 0.9))
+# laplace_03_cube$mode %>% quantile(seq(0.025, 0.975, 0.9))
 ```
-The cubic model beta's 90% uncertainty interval herein contains 0.
+It seems like none of the parameters' 95% uncertainty intervals contain 0.
 
 ### 4e)
 
