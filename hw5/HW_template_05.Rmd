@@ -411,8 +411,15 @@ Let's now assume that we are using a very diffuse prior on the noise, and thus $
 **Based on your derivation in Problem 3d), derive the maximum likelihood estimate (MLE) on the $\varphi$ parameter given the OLS estimate to the $SSE$.**  
 
 #### SOLUTION
+$$
+\begin{aligned}
+\frac{d(\log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right])}{d\varphi} = 0 \\
+-N  +SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi + 1 = 0 \\
+SSE_{OLS} \cdot e^{-2\varphi} = N - 1 \\
+\varphi_{MLE} = -\frac{1}{2}log(\frac{N - 1}{SSE_{OLS}}) 
 
-Your derivation here.  
+\end{aligned}
+$$
 
 ## Problem 04
 
@@ -440,7 +447,8 @@ Complete the code chunk below by filling in the required information.
 
 ```{r, solution_04a}
 ### calculate the standardized response
-y_stan <- 
+y_stan <- prob_01_df$yobs
+prob_01_df
 
 info_04 <- list(
   yobs = ,
