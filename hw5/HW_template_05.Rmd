@@ -1,0 +1,774 @@
+---
+title: "CS 1675 Homework: 05"
+subtitle: "Assigned March 23, 2020; Due: March 31, 2020"
+author: "Shibo Xing"
+date: "Submission time: March 31, 2020 at 9:00AM EST"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Collaborators
+
+Include the names of your collaborators here.  
+
+## Overview
+
+This homework assignment serves as a review to help prepare for Test 02. It covers important mathematical concepts behind linear and generalized linear models. You will get extra practice working with the equations behind the functions you have programmed over the last several assignments.  
+
+```{r, load_packages, warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+## Problem 01
+
+Homework 04 was all about applying linear and generalized linear modeling techniques to identify the best performing models. You created many spline basis function models with many degrees of freedom to identify the simplest possible model that did not overfit to the training data. You also fit two logistic regression models to identify the simplest model that does not overfit the binary outcome. This problem focuses on understanding the matrix sum of squares since it is so critical for understanding the uncertainty in the coefficients and the relationship between them.  
+
+A data set is loaded for you in the code chunk below. The data set consists of 2 inputs, $x_1$ and $x_2$, and a continuous response, $y$. A glimpse of the data set is provided in the output of the code chunk below.  
+
+```{r, read_prob_01_data, eval=TRUE}
+prob_01_df <- readr::read_csv("https://raw.githubusercontent.com/jyurko/CS_1675_Spring_2020/master/hw_data/hw05/hw_05_prob_01_data.csv", col_names = TRUE)
+
+prob_01_df %>% glimpse()
+```
+
+The code chunk below creates a scatter plot for you between the response and the two inputs. The data is first reshaped into a "long" format to allow making the separate scatter plots side-by-side with `facet_grid()`.  
+
+```{r, viz_prob_01_scatter, eval=TRUE}
+prob_01_df %>% 
+  tibble::rowid_to_column() %>% 
+  tidyr::gather(key = "input_name",
+                value = "input_value",
+                -rowid, -y) %>% 
+  ggplot(mapping = aes(x = input_value, y = y)) +
+  geom_point() +
+  facet_grid(~input_name) +
+  theme_bw()
+```
+
+### 1a)
+
+In this problem, you will study the behavior of a linear relationship with each input plus an interaction term between the two. The mean trend expression is written below:  
+
+
+$$ 
+\mu_n = \beta_0 + \beta_1 x_{n,1} + \beta_2 x_{n,2} + \beta_3 x_{n,1} x_{n,2}
+$$
+
+You must create the design matrix for this particular interaction model.  
+
+#### PROBLEM
+
+**Create the design matrix associated with the model which includes the interaction term between $x_1$ and $x_2$. Assign the design matrix to the variable `Xmat`. How many columns are in the design matrix? Which column corresponds to the interaction term?**  
+
+*HINT*: The column names from a `matrix` in `R` can be accessed with the `colnames()` function.  
+
+#### SOLUTION
+
+Your solution here. Insert as many code chunks as you feel are appropriate.  
+```{r, solution_01a}
+Xmat = model.matrix(y ~ I(x1) + I(x2) + I(x1 * x2), prob_01_df)
+```
+4 columns, the 4th column corresponds to the interaction term
+
+
+### 1b)
+
+You will now calculate the matrix sum of squares.  
+
+#### PROBLEM
+
+**Calculate the matrix sum of squares and assign the result to the `SSmat` variable. What are the dimensions of `SSmat`?**  
+
+#### SOLUTION
+
+```{r, solution_01b}
+SSmat = t(Xmat) %*% Xmat
+```
+
+### 1c)
+
+Let's take a closer look at the matrix sum of squares to get a better picture of its structure.  
+
+#### PROBLEM
+
+**What is the value of the first row, first column $\left[1,1\right]$ element within `SSmat`? Why does it equal that particular value?**  
+
+
+#### SOLUTION
+```{r, solution_01c}
+SSmat[1,1]
+```
+The intercept column, which is the first column in Xmat consists of 100 ones. Thus the [1][1] element of SSmat, the inner product of Xmat, is the inner product of the first column of Xmat, which is 100.
+
+### 1d)
+
+Let's look at another element in the matrix sum of squares.  
+
+#### PROBLEM
+
+**What is the value of the 2nd row, 3rd column in the matrix sum of squares? Demonstrate how that value is calculated**  
+
+#### SOLUTION
+
+```{r, solution_01d}
+SSmat[2, 3]
+```
+
+the calculation is:
+$$
+  \sum_{n}^{N}{Xmat_{n, 2} \cdot Xmat_{n, 3}} 
+$$
+
+### 1e)
+
+Let's now consider the entire matrix sum of squares.  
+
+#### PROBLEM
+
+**What other elements in the matrix sum of squares are equal to the value in the 2nd row and 3rd column? Why is that the case?**  
+
+#### SOLUTION
+```{r, solution_01e}
+SSmat
+c(which(SSmat == SSmat[2, 3]))
+SSmat[c(which(SSmat == SSmat[2, 3]))]
+```
+The elements from the bottom left corner to the rop right corner are all equal to each other.
+Since the values on the 4th column of Xmat is x1 * x2, on the 1th column are all ones, the (1,4) and (4,1) elements on sstable should be all x1 * x2. Also the elements (2,3) and (3,2) are the inner product of column 2 and 3 in Xmat, which are also x1 * x2, thus (1,4), (2,3), (3,2) and (4,1) are all the same.
+
+### 1f)
+
+The matrix sum of squares controls the posterior covariance matrix of the coefficients. Let's examine the behavior of the posterior covariance matrix under two different assumptions for the noise, $\sigma$.  
+
+#### PROBLEM
+
+**Calculate the posterior covariance matrix assuming $\sigma=1$. Assign the result to `bcov_1`. Then calculate the posterior covariance matrix assuming $\sigma=5$ and assign the result to `bcov_5`.**  
+
+#### SOLUTION
+
+The posterior covariance matrix is the squared noise, $\sigma^2$, multiplied by the inverse of the matrix sum of squares. The two different cases are calculated below.  
+
+```{r, solution_01f_b}
+bcov_1 <- (1 ^ 2) * solve(SSmat)
+bcov_5 <- (5 ^ 2) * solve(SSmat)
+```
+
+### 1g)
+
+Problem 1f) considered two possible noise values. Does the posterior *correlation* between the coefficients change based on our assumed noise?  
+
+#### PROBLEM
+
+**Convert the posterior covariance matrices to correlation matrices. Are the correlation matrices different?**  
+
+#### SOLUTION
+
+```{r, solution_01g}
+cov2cor(bcov_1)
+cov2cor(bcov_5)
+```
+No, the correlation matrices are the same with different sigmas.
+
+## Problem 02
+
+In lecture, most of the detailed derivations we covered were for the case a linear model with known noise, $\sigma$, and an infinitely diffuse prior, $p\left(\boldsymbol{\beta}\right) \propto 1$, on the mean trend coefficients. We discussed graphically the behavior of the posterior with an informative prior and discussed the closed form analytic expression for the posterior when we use Gaussian (or MVN) distributions on the coefficients. We also discussed the relationship between the Gaussian prior with the Ridge penalty term in non-Bayesian settings.  
+
+In this problem, you will get practice working through the structure of the equations when the noise, $\sigma$, is considered unknown and must be learned along with the $\boldsymbol{\beta}$ parameters. This is the complete structure you worked with in the last assignment when you fit the various spline basis models. So you will now step into the math to see what was going on behind the scenes in the functions you programmed in the `lm_logpost()` function from Homework 04.  
+
+The complete probability model is written for you below. It uses independent Gaussian priors on the coefficients with shared (or common) prior mean $\mu_{\beta}$ and shared prior standard deviation $\tau_{\beta}$. It also uses an Exponential distribution as the prior on the unknown noise, $\sigma$. The rate hyperparameter is now enoded as $\nu$ to avoid confusion with the regularization or penalty factor $\lambda$. So please be aware of the notation change relative to Homework 04. You will still work with the mean trend with the interaction between the two inputs.  
+
+$$ 
+y_n \mid \mu_n, \sigma \sim \mathrm{normal}\left(y_n \mid \mu_n, \sigma \right)
+$$
+
+$$ 
+\mu_n = \beta_0 + \beta_1 x_{n,1} + \beta_2 x_{n,2} + \beta_3 x_{n,1} x_{n,2}
+$$
+
+$$
+\boldsymbol{\beta} \mid \mu_{\beta}, \tau_{\beta} \sim \prod_{d=0}^{D} \left( \mathrm{normal} \left( \beta_d \mid \mu_{\beta}, \tau_{\beta} \right) \right)
+$$
+
+$$ 
+\sigma \mid \nu \sim \mathrm{Exp} \left( \sigma \mid \nu \right)
+$$
+
+I like to use this format to describe the models because it high lights each of the key piecs, the likelihood, the deterministic relationship, and the priors. However, if we focus on the log-posterior directly, it is more convenient to write things in more compact notation. The un-normalized log-posterior written as the summation of the log-likelihood and the log-prior is given to you below.  
+
+$$ 
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto \log\left[p\left(\mathbf{y} \mid \mathbf{X},\boldsymbol{\beta},\sigma\right)\right] +\log\left[p\left(\boldsymbol{\beta} \mid \mu_{\beta},\tau_{\beta}\right)\right] +\log\left[p\left(\sigma \mid \nu \right)\right]
+$$
+
+In this problem, you work through the manipulating each of the components of the un-normalized log-posterior to get a feel for the math behind the functions when the noise $\sigma$ is unknown.  
+
+*NOTE*: Throughout this problem you are allowed to use separate equation blocks for each equation you type. It is easier than placing all equations in a single equation block when going through the PDF rendering process.  
+
+### 2a)
+
+You will start with the log-likelihood.  
+
+#### PROBLEM
+
+**Write out the log-likelihood as a function of the unknown noise, $\sigma$, and the unknown coefficients, $\boldsymbol{\beta}$. Make use of matrix notation to write the log-likelihood in terms of the design matrix $\mathbf{X}$. You can drop all constants that do not directly involve $\sigma$ or $\boldsymbol{\beta}$, thus you can write out the log-likelihood up to a normalizing constant.**  
+
+#### SOLUTION
+
+$$
+\begin{aligned}
+  f(\beta, \sigma) = \sum_n^N{(-\frac{log(\sigma^2)}{2} - \frac{log(\pi)}{2} - \frac{(y_n - \mu_n)^2}{2})} \\
+  f(\beta, \sigma) \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta)
+\end{aligned}
+$$
+
+### 2b)
+
+Next, let's consider the log-prior on the mean trend coefficients.  
+
+#### PROBLEM
+
+**Write out the log-prior on the $\boldsymbol{\beta}$ parameters as a function of $\boldsymbol{\beta}$ and $\sigma$. You can write the log-prior up to a normalizing constant. Does the log-prior on $\boldsymbol{\beta}$ depend on $\sigma$?**  
+
+#### SOLUTION
+
+$$
+\begin{aligned}
+  f(\beta, \sigma) = log(\sum_{d=0}^{D} (\mathrm{normal}( \beta_d | \mu_{\beta}, \tau_{\beta} )))  \\
+  f(\beta, \sigma) = \sum_{d=0}^{D}(-\frac{1}{2}log(\tau_\beta^2) - \frac{1}{2}log(2\pi) - \frac{1}{2\tau_\beta^2}(\beta_d - \mu_\beta)^2)\\
+  f(\beta, \sigma) = -\frac{D}{2}log(\tau_\beta^2) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2
+\end{aligned}
+$$
+log prior on beta does not depend on sigma.
+
+### 2c)
+
+And now let's consider the log-prior on the unknown noise $\sigma$.  
+
+#### PROBLEM
+
+**Write out the log-prior on the noise $\sigma$ as a function of $\boldsymbol{\beta}$ and $\sigma$. You can write the log-prior up to a normalizing constant, and thus drop constant terms. Does the log-prior on $\sigma$ depend on $\boldsymbol{\beta}$?**  
+
+*HINT*: You worked with the pdf to the Exponential distribution in Homework 02.  
+
+#### SOLUTION
+
+$$
+\begin{aligned}
+  f(\beta, \sigma) = log(\mathrm{Exp} \left( \sigma \mid \nu \right)) \\ 
+  f(\beta, \sigma) = log(\nu \cdot e^{-\nu\sigma}) \\ 
+  f(\beta, \sigma) = - \nu \sigma 
+\end{aligned}
+$$
+log-prior on sigma does not depend on beta
+
+### 2d)
+
+You have written out each of the components of the log-posterior. It's now time to combine them together.  
+
+#### PROBLEM
+
+**Combine the log-likelihood and the log-priors together to write out the log-posterior up to a normalizing constant.**  
+
+#### SOLUTION
+
+$$
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -N \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) -{D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2 - \nu \sigma 
+$$
+
+
+### 2e)
+
+Throughout the semester we have assumed that the prior mean on the $\boldsymbol{\beta}$ parameters is zero, $\mu_{\beta}=0$. Write out the log-posterior function assuming that is the case.  
+
+
+#### PROBLEM
+
+**Write out the log-posterior function assuming $\mu_{\beta}=0$. Does the prior still have effect when we make that assumption? What controls the "strength" of the prior?**  
+
+#### SOLUTION
+
+$$
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma 
+$$
+The beta prior then would become the equation above. The beta prior still has effects on the log posterior because only the mode of the prior distribution of beta changes. What really controls the strength of the prior should be tau_beta, which is the variable determining how diffuse the prior distribution of beta is.
+
+## Problem 03
+
+You will now focus more closely on the unknown $\sigma$ parameter within the log-posterior. In this problem, you will build off of your solutions in Problem 02 and make use of the probability change-of-variables. In this way you will see what goes on behind the scenes when the Laplace Approximation approximates the posterior in the unbounded space with the $\varphi$ parameter.  
+
+### 3a)
+
+Before performing the change-of-variables, let's rewrite the log-posterior to depend on the sum of squared errors ($SSE$).  
+
+#### PROBLEM
+
+**Rewrite the un-normalized log-posterior in terms of the $SSE$.**  
+
+#### SOLUTION
+
+$$
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -{N} \cdot log(\sigma) - \frac{1}{2 \cdot \sigma^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma
+$$
+
+
+### 3b)
+
+Up to this point in the semester, you have fit many linear models with unknown noise terms. The Laplace Approximation function `my_laplace()` took care of the optimization and Hessian matrix evaluations for you. You had to provide the log-posterior function. Because the Laplace Approximation approximates the posterior as a MVN, you have been using a change-of-variables transformation to transform the lower bounded $\sigma$ parameter to an unbounded parameter, $\varphi$. The Laplace Approximation was then applied to the joint posterior in the unbounded space between $\boldsymbol{\beta}$ and $\varphi$.  
+
+The transformation is applied via a *link* function, $g\left(\cdot\right)$. The unbounded transformed noise $\varphi$ is then:  
+
+$$ 
+\varphi = g\left(\sigma\right)
+$$
+
+The original noise parameter is then equal to the *inverse link* function applied to the transformed variable:  
+
+$$ 
+\sigma = g^{-1} \left(\varphi\right)
+$$
+
+You will work through how the transformation is applied and modifies the log-posterior function. Write out the log-posterior function for the unbounded variables $\boldsymbol{\beta}$ and $\varphi$. You do not need to perform all of the substitutions just yet. What must be added to the log-posterior based on $\sigma$ in order to write out the log-posterior for $\varphi$?  
+
+#### PROBLEM
+
+**Complete the expression below. How should you write out the log-posterior relative to $\sigma$ in terms of $\varphi$ and what must be added to that log-posterior? Work in general terms for now with a general link function $g\left(\cdot\right)$ and general inverse link function $g^{-1}\left(\cdot\right)$**  
+
+#### SOLUTION
+
+Complete the expression below.  
+
+$$ 
+\log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right] = \log \left[p\left(\boldsymbol{\beta},  g^{-1}(\varphi) \mid \mathbf{X}, \mathbf{y}\right)\right] + log(\frac{d(g^{-1}(\varphi))}{d\varphi})
+$$
+
+### 3c)
+
+Let's now make use of the transformation that you used in the previous homework assignments. The unbounded variable $\varphi$ will be the log-transformation of the noise $\sigma$:  
+
+$$ 
+\varphi = \log\left[\sigma\right]
+$$
+
+#### PROBLEM
+
+**Derive the log-posterior function relative to $\boldsymbol{\beta}$ and $\varphi$ completely in terms of $\boldsymbol{\beta}$ and $\varphi$.**  
+
+#### SOLUTION
+
+$$
+\begin{aligned}
+\log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right] = \log \left[p\left(\boldsymbol{\beta},  g^{-1}(\varphi) \mid \mathbf{X}, \mathbf{y}\right)\right] + log(\frac{d(g^{-1}(\varphi))}{d\varphi}) \\
+ = -{N} \cdot log(g^{-1}(\varphi)) - \frac{1}{2 \cdot g^{-1}(\varphi)^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu g^{-1}(\varphi) + \varphi \\
+ = -{N} \cdot log(exp(\varphi)) - \frac{1}{2 \cdot exp(\varphi)^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot exp(\varphi) + \varphi \\
+ = -{N} \cdot \varphi - \frac{1}{2 \cdot e^{2\varphi}}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot e^\varphi + \varphi
+\end{aligned}
+$$
+
+### 3d)
+
+The first step in the Laplace Approximation is to identify the posterior mode. The gradient vector is calculated and an optimization scheme iterates until the mode is found. You do NOT need to calculate the complete gradient vector in this problem. You will focus on the partial first derivative of the un-normalized log-posterior with respect to $\varphi$.  
+
+#### PROBLEM
+
+**Derive the partial first derivative of the un-normalized log-posterior with respect to $\varphi$.**  
+
+*HINT*: You can leave the result in terms of the $SSE$.  
+
+#### SOLUTION
+
+$$
+\begin{aligned}
+\frac{d(\log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right])}{d\varphi} = -N  -\frac{SSE}{2} \cdot\frac{d(exp(\varphi^{-2}))}{d\varphi} - \nu \cdot e^\varphi + 1 \\
+= -N  -\frac{SSE}{2} \cdot e^{-2 \varphi} \cdot (-2) - \nu \cdot e^\varphi + 1 \\
+= -N  +SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi + 1 
+\end{aligned}
+$$
+
+
+### 3e)
+
+Once the posterior mode has been identified, the second step of the Laplace Approximation is calculate the Hessian matrix - the matrix of second derivatives. You do NOT need to calculate the complete Hessian matrix. In this problem you will focus on the partial second derivative of the un-normalized log-posterior with respect to $\varphi$.  
+
+#### PROBLEM
+
+**Derive the partial second derivative of the un-normalized log-posterior with respect to $\varphi$.**  
+
+#### SOLUTION
+$$
+
+\frac{d^2p(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y})}{d\varphi^2} = -2SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi 
+$$
+
+### 3f)
+
+Let's now assume that we are using a very diffuse prior on the noise, and thus $\nu\rightarrow0$, as well as a very diffuse prior on the $\boldsymbol{\beta}$ parameters, $\tau_{\beta} \rightarrow \infty$. Under these conditions the sum of squared errors associated with the OLS estimates, $\boldsymbol{\beta}_{OLS}$, will be denoted as $SSE_{OLS}$.  
+
+#### PROBLEM
+
+**Based on your derivation in Problem 3d), derive the maximum likelihood estimate (MLE) on the $\varphi$ parameter given the OLS estimate to the $SSE$.**  
+
+#### SOLUTION
+
+Your derivation here.  
+
+## Problem 04
+
+Now that you have explored the math behind the log-posterior in great detail, it's time to fit a Bayesian linear model. You will continue to use independent Gaussian priors on the $\boldsymbol{\beta}$ parameters with common prior mean $\mu_{\beta}=0$ and common prior standard deviation $\tau_{\beta}$. Specify the prior on the unknown noise, $\sigma$, as an Exponential distribution with rate parameter $\nu = 1.5$. You will also continue to use the log-transformation on the noise parameter. Thus the log-posterior function will be defined in terms of the unknown $\boldsymbol{\beta}$ parameters and the unknown $\varphi$ parameter.  
+
+You will continue to work with the linear relationship which includes the interaction term:  
+
+$$ 
+\mu_n = \beta_0 + \beta_1 x_{n,1} + \beta_2 x_{n,2} + \beta_3 x_{n,1} x_{n,2}
+$$
+
+### 4a)
+
+You will define the `lm_logpost()` function, just as you did in Homework 04. Thus, the first step is to create the list of required information which includes the responses, design matrix, and the prior hyperparameters. Specify the prior standard deviation to be 5.  
+
+However, compared to Homework 04, you must standardize the response variable $y$ before fitting the model.  
+
+#### PROBLEM
+
+**Define the list of required information `info_04` in the code chunk below. Calculate the standardized response, `y_stan` and set that equal to the `yobs` variable in the `info_04` list.**  
+
+#### SOLUTION
+
+Complete the code chunk below by filling in the required information.  
+
+```{r, solution_04a}
+### calculate the standardized response
+y_stan <- 
+
+info_04 <- list(
+  yobs = ,
+  design_matrix = ,
+  mu_beta = ,
+  tau_beta = ,
+  sigma_rate = 
+)
+```
+
+### 4b)
+
+Define the log-posterior function, `lm_logpost()`, in the code chunk below.  
+
+#### PROBLEM
+
+**Complete the code chunk below. The comments specify what needs to be completed.**  
+
+**Once completed test out the function by evaluating the log-posterior at two different sets of parameter values. Try out values of -2 and 2 for all parameters.**  
+
+*HINT*: This should look familiar...    
+
+*HINT*: If your function is completed successfully, you should get a value of -50214.42 for the -2 guess, and a value of -325.3106 for the guess of all 2's.  
+
+```{r, solution_04b}
+lm_logpost <- function(unknowns, my_info)
+{
+  # specify the number of unknown beta parameters
+  length_beta <- 
+  
+  # extract the beta parameters from the `unknowns` vector
+  beta_v <- 
+  
+  # extract the unbounded noise parameter, varphi
+  lik_varphi <- 
+  
+  # back-transform from varphi to sigma
+  lik_sigma <- 
+  
+  # extract design matrix
+  X <- 
+  
+  # calculate the linear predictor
+  mu <- 
+  
+  # evaluate the log-likelihood
+  log_lik <- 
+  
+  # evaluate the log-prior
+  log_prior_beta <- 
+  
+  log_prior_sigma <- 
+  
+  # add the mean trend prior and noise prior together
+  log_prior <- 
+  
+  # account for the transformation
+  log_derive_adjust <- 
+  
+  # sum together
+  
+}
+```
+
+Test out the function with a guess of -2 for all parameters below.  
+
+```{r, solution_04b_b}
+lm_logpost( )
+```
+
+Test out the function with a guess of 2 for all parameters below.  
+
+```{r, solution_04b_c}
+lm_logpost()
+```
+
+### 4c)
+
+The `my_laplace()` and the `generate_lm_post_samples()` functions are provided to you in the code chunk below. You do not need to modify these code chunks at all in this assignment.  
+
+```{r, define_helper_functions, eval=TRUE}
+### the my_laplace() function is the same you have used in the
+### last several assignments
+my_laplace <- function(start_guess, logpost_func, ...)
+{
+  # code adapted from the `LearnBayes`` function `laplace()`
+  fit <- optim(start_guess,
+               logpost_func,
+               gr = NULL,
+               ...,
+               method = "BFGS",
+               hessian = TRUE,
+               control = list(fnscale = -1, maxit = 1001))
+  
+  mode <- fit$par
+  h <- -solve(fit$hessian)
+  p <- length(mode)
+  int <- p/2 * log(2 * pi) + 0.5 * log(det(h)) + logpost_func(mode, ...)
+  
+  list(mode = mode,
+       var_matrix = h,
+       log_evidence = int,
+       converge = ifelse(fit$convergence == 0,
+                         "YES", 
+                         "NO"),
+       iter_counts = fit$counts[1])
+}
+
+### pay attention to the arguments to this function, they are the same
+### as those used in the previous assignment
+generate_lm_post_samples <- function(mvn_result, length_beta, num_samples)
+{
+  MASS::mvrnorm(n = num_samples, 
+                mu = mvn_result$mode, 
+                Sigma = mvn_result$var_matrix) %>% 
+    as.data.frame() %>% tbl_df() %>% 
+    purrr::set_names(c(sprintf("beta_%02d", (1:length_beta) - 1), "varphi")) %>% 
+    mutate(sigma = exp(varphi))
+}
+```
+
+You will now perform the Laplace Approximation to fit the Bayesian linear model and generate posterior samples of the parameters.  
+
+#### PROBLEM
+
+**Fit the Bayesian linear model with the Laplace Approximation, using a starting guess of all zeros. Generate 2500 posterior samples. What is the posterior median on $\sigma$? What is the posterior 25th and 75th quantiles on $\sigma$? Also calculate the 25th, median, and 75th posterior quantiles on the interaction parameter, $\beta_3$.**  
+
+#### SOLUTION
+
+Fit the model and generate the posterior samples in the code chunk below.  
+
+```{r, solution_04c_a}
+laplace_result_a <- my_laplace( )
+
+post_samples_a <- generate_lm_post_samples( )
+```
+
+Insert as many additional code chunks as you feel are appropriate.  
+
+### 4d)
+
+Let's now see what happens if we try out several different prior standard deviations on the coefficients. Refit the model but this time with $\tau_{\beta}=25$, and then explore the results.  
+
+#### PROBLEM
+
+**You must create a new list of required information, fit the model with the Laplace Approximation, and generate 2500 posterior samples. Calculate the 25th, median, and 75th quantiles on the interaction parameter, $\beta_3$, and the noise, $\sigma$. Are the quantiles on $\sigma$ different than the case with $\tau_{\beta}$?**  
+
+#### SOLUTION
+
+Make the required list of information, fit the model, and generate the samples.  
+
+```{r, solution_04d_a}
+info_04_weak <- list(
+  yobs = ,
+  design_matrix = ,
+  mu_beta = ,
+  tau_beta = ,
+  sigma_rate = 
+)
+
+laplace_result_weak <- my_laplace( )
+
+post_samples_weak <- generate_lm_post_samples( )
+```
+
+Insert as many additional code chunks as you feel are appropriate.  
+
+### 4e)
+
+Now try a strong prior with a prior standard deviation of 1/25. Refit the model and regenerate the posterior samples. Do the results change now?  
+
+#### PROBLEM
+
+**You must create a new list of required information, fit the model with the Laplace Approximation, and generate 2500 posterior samples. Calculate the 25th, median, and 75th quantiles on the interaction parameter, $\beta_3$, and the noise, $\sigma$.**  
+
+**How do the results compare with the previous two prior specifications?**  
+
+#### SOLUTION
+
+Respecify the model and fit the model in the code chunk below.  
+
+```{r, solution_04e}
+info_04_strong <- list(
+  yobs = ,
+  design_matrix = ,
+  mu_beta = ,
+  tau_beta = ,
+  sigma_rate = 
+)
+
+laplace_result_strong <- my_laplace( )
+
+post_samples_strong <- generate_lm_post_samples( )
+```
+
+Insert as many additional code chunks as you feel are appropriate.  
+
+## Problem 05
+
+In addition to stepping through the derivation of the linear model, we also went through the key mathematical concepts behind logistic regression. In lecture, we derived the gradient and Hessian for a logistic regression model assuming an infinitely diffuse prior. We discussed the classic approach to fitting the logistic regression model with the Iteratively Reweighted Least Squares (IRLS) algorithm. You will go through one iteration of IRLS to see how the concepts from the linear model extend to a binary classification setting.  
+
+The code chunk below reads in a new data set, consisting of four continuous inputs, $x_1$ through $x_4$, and a binary response, $y$. The binary response is encoded as 0 for the non-event and 1 for event. A glimpse of the data is provided for you below.  
+
+```{r, read_in_binary_demo, eval=TRUE}
+prob_05_df <- readr::read_csv("https://raw.githubusercontent.com/jyurko/CS_1675_Spring_2020/master/hw_data/hw05/hw_05_prob_05_data.csv", col_names = TRUE)
+
+prob_05_df %>% glimpse()
+```
+
+### 5a)
+
+You will work with a linear additive relationship between the linear predictor, $\eta$, and the inputs. The linear predictor relationship is written out for you below.  
+
+$$ 
+\eta_n = \beta_0 + \beta_1 x_{n,1} + \beta_2 x_{n,2} + \beta_3 x_{n,3} + \beta_4 x_{n,4}
+$$
+
+Create the design matrix associated with this model.  
+
+#### PROBLEM
+
+**Create the design matrix for the linear additive relationship. Assign the result to the `X05` variable. How many columns are in the design matrix?**  
+
+#### SOLUTION
+
+```{r, solution_05a}
+X05 <- 
+```
+
+### 5b)
+
+The IRLS algorithm is iterative and requires us to specify an initial guess for the coefficients. You will define an initial guess of 1.5 for all coefficients. Calculate the linear predictor based on the assumed coefficient values and the design matrix created in Problem 5a).
+
+#### PROBLEM
+
+**Define the initial guess parameter vector `binit` below to a vector 1.5 for all parameters. Calculate the linear predictor and assign the result to `eta_init`. You must use matrix math to calculate the linear predictor.**  
+
+#### SOLUTION
+
+```{r, solution_05b}
+binit <- 
+
+eta_init <- 
+```
+
+### 5c)
+
+The next step is to calculate the event probability based on the current linear predictor guess.  
+
+#### PROBLEM
+
+**Calculate the event probability and assign the result to the variable `mu_init`.**  
+
+#### SOLUTION
+
+```{r, solution_05c}
+mu_init <- 
+```
+
+### 5d)
+
+With the even probability calculated with for observation you can now calculate the weighting matrix $\mathbf{S}$.  
+
+#### PROBLEM
+
+**Calculate the weighting matrix `Sweight` based on the current guess for the event probability. What is the dimensionality of the `Sweight` matrix?**  
+
+#### SOLUTION
+
+```{r, solution_05d}
+### feel free to use as many steps as you feel are appropriate
+### to calculate the Sweight matrix
+Sweight <- 
+```
+
+### 5e)
+
+In lecture, we discussed how the IRLS algorithm updates the guess for the coefficients by calculating the "working response", $\mathbf{z}$. Write out the expression for the working response and then calculate the working response based on the current guess for the coefficients.  
+
+#### PROBLEM
+
+**Write out the expression for the working response and calculate it based on the current guess for the parameters. Assing the result to the variable `z_init`**  
+
+#### SOLUTION
+
+Use an equation block to write the expression for the working response.  
+
+```{r, solution_05e}
+### calculate the working response
+z_init <- 
+```
+
+### 5f)
+
+Before calculating the updated coefficient values, let's first consider the weighted sum of squares matrix.  
+
+#### PROBLEM
+
+**Write out the expression for the weighted sum of squares matrix. Calculate it based on the current coefficient guess and assign the result to the variable `wSSmat`. How many rows and columns does `wSSmat` have?**  
+
+#### SOLUTION
+
+Write the expression for the weighted sum of squares matrix in an equation block.  
+
+```{r, solution_05f}
+wSSmat <- 
+```
+
+### 5g)
+
+It's now time to calculate the updated coefficient values, $\boldsymbol{\beta}_{k+1}$.  
+
+#### PROBLEM
+
+**Write out the formula for the new coefficients based on the current coefficient guess. Calculate the new coefficients and assign the result to `b_new`. Display the updated coefficients to the screen.**  
+
+#### SOLUTION
+
+Write out the formula for the updated coefficients in an equation block.  
+
+```{r, solution_05g}
+### calculate the udpated coefficients
+b_new <- 
+```
+
+Print out the updated coefficients.  
+
+```{r, solution_05g_b}
+### 
+```
+
