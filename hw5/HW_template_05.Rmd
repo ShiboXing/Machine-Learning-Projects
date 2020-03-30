@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Include the names of your collaborators here.  
+Ziyi Gong, Shibo Xing 
 
 ## Overview
 
@@ -236,9 +236,9 @@ Next, let's consider the log-prior on the mean trend coefficients.
 
 $$
 \begin{aligned}
-  f(\beta, \sigma) = log(\prod_{d=0}^{D} (\mathrm{normal}( \beta_d | \mu_{\beta}, \tau_{\beta} )))  \\
+  f(\beta, \sigma) = log(\sum_{d=0}^{D} (\mathrm{normal}( \beta_d | \mu_{\beta}, \tau_{\beta} )))  \\
   f(\beta, \sigma) = \sum_{d=0}^{D}(-\frac{1}{2}log(\tau_\beta^2) - \frac{1}{2}log(2\pi) - \frac{1}{2\tau_\beta^2}(\beta_d - \mu_\beta)^2)\\
-  f(\beta, \sigma) = -\frac{D}{2}log(\tau_\beta^2) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2
+  f(\beta, \sigma) = \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2
 \end{aligned}
 $$
 log prior on beta does not depend on sigma.
@@ -275,7 +275,7 @@ You have written out each of the components of the log-posterior. It's now time 
 #### SOLUTION
 
 $$
-\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -N \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) -{D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2 - \nu \sigma 
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -N \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d - \mu_\beta)^2 - \nu \sigma 
 $$
 
 
@@ -291,7 +291,7 @@ Throughout the semester we have assumed that the prior mean on the $\boldsymbol{
 #### SOLUTION
 
 $$
-\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma 
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta)  - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma 
 $$
 The beta prior then would become the equation above. The beta prior still has effects on the log posterior because only the mode of the prior distribution of beta changes. What really controls the strength of the prior should be tau_beta, which is the variable determining how diffuse the prior distribution of beta is.
 
@@ -310,7 +310,7 @@ Before performing the change-of-variables, let's rewrite the log-posterior to de
 #### SOLUTION
 
 $$
-\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -{N} \cdot log(\sigma) - \frac{1}{2 \cdot \sigma^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -{N} \cdot log(\sigma) - \frac{1}{2 \cdot \sigma^2}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma
 $$
 
 
@@ -361,9 +361,9 @@ $$
 $$
 \begin{aligned}
 \log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right] = \log \left[p\left(\boldsymbol{\beta},  g^{-1}(\varphi) \mid \mathbf{X}, \mathbf{y}\right)\right] + log(\frac{d(g^{-1}(\varphi))}{d\varphi}) \\
- = -{N} \cdot log(g^{-1}(\varphi)) - \frac{1}{2 \cdot g^{-1}(\varphi)^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu g^{-1}(\varphi) + \varphi \\
- = -{N} \cdot log(exp(\varphi)) - \frac{1}{2 \cdot exp(\varphi)^2}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot exp(\varphi) + \varphi \\
- = -{N} \cdot \varphi - \frac{1}{2 \cdot e^{2\varphi}}\cdot SSE - {D}\cdot log(\tau_\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot e^\varphi + \varphi
+ = -{N} \cdot log(g^{-1}(\varphi)) - \frac{1}{2 \cdot g^{-1}(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu g^{-1}(\varphi) + \varphi \\
+ = -{N} \cdot log(exp(\varphi)) - \frac{1}{2 \cdot exp(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot exp(\varphi) + \varphi \\
+ = -{N} \cdot \varphi - \frac{1}{2 \cdot e^{2\varphi}}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot e^\varphi + \varphi
 \end{aligned}
 $$
 
@@ -653,7 +653,7 @@ info_04_strong <- list(
   yobs = y_stan,
   design_matrix = Xmat,
   mu_beta = info_04$mu_beta,
-  tau_beta = 1 / 5,
+  tau_beta = 1 / 25,
   sigma_rate = info_04$sigma_rate
 )
 
@@ -670,7 +670,7 @@ post_samples_strong$beta_03 %>% median
 post_samples_strong$beta_03 %>% quantile(0.25)
 post_samples_strong$beta_03 %>% quantile(0.75)
 ```
-The changes on the quantiles are slightly different than before but still extremely close given different noise on prior.
+The changes on the quantiles are drastically different than before because of a strong constraint on the prior distribution, all the values are much higher than before.
 
 ## Problem 05
 
@@ -701,7 +701,7 @@ Create the design matrix associated with this model.
 #### SOLUTION
 
 ```{r, solution_05a}
-X05 <- 
+X05 <- model.matrix(y ~ I(x1) + I(x2) + I(x3) + I(x4), prob_05_df)
 ```
 
 ### 5b)
@@ -715,9 +715,8 @@ The IRLS algorithm is iterative and requires us to specify an initial guess for 
 #### SOLUTION
 
 ```{r, solution_05b}
-binit <- 
-
-eta_init <- 
+binit <- c(1.5, 1.5, 1.5, 1.5, 1.5)
+eta_init <- as.vector(X05 %*% binit)
 ```
 
 ### 5c)
@@ -731,7 +730,7 @@ The next step is to calculate the event probability based on the current linear 
 #### SOLUTION
 
 ```{r, solution_05c}
-mu_init <- 
+mu_init <- boot::inv.logit(eta_init)
 ```
 
 ### 5d)
@@ -747,7 +746,8 @@ With the even probability calculated with for observation you can now calculate 
 ```{r, solution_05d}
 ### feel free to use as many steps as you feel are appropriate
 ### to calculate the Sweight matrix
-Sweight <- 
+Sweight <- diag(mu_init * (1 - mu_init))
+Sweight %>% dim
 ```
 
 ### 5e)
@@ -760,11 +760,14 @@ In lecture, we discussed how the IRLS algorithm updates the guess for the coeffi
 
 #### SOLUTION
 
+$$
+z_k = X\beta_k + S^{-1}_k(y - \mu_k)
+$$
 Use an equation block to write the expression for the working response.  
 
 ```{r, solution_05e}
 ### calculate the working response
-z_init <- 
+z_init <- eta_init + solve(Sweight) %*% (prob_05_df$y - mu_init)
 ```
 
 ### 5f)
@@ -778,9 +781,13 @@ Before calculating the updated coefficient values, let's first consider the weig
 #### SOLUTION
 
 Write the expression for the weighted sum of squares matrix in an equation block.  
+$$
+SSE = X^TSX = \sum^N_n(\mu_n (1 - \mu_n)x_{n,:}^Tx_{n,:})
+$$
 
 ```{r, solution_05f}
-wSSmat <- 
+wSSmat <- t(X05) %*% Sweight %*% X05
+wSSmat %>% dim
 ```
 
 ### 5g)
@@ -795,14 +802,18 @@ It's now time to calculate the updated coefficient values, $\boldsymbol{\beta}_{
 
 Write out the formula for the updated coefficients in an equation block.  
 
+$$
+\beta_{k+1} = (X^TS_kX)^{-1}X^TS_kz_k
+$$
+
 ```{r, solution_05g}
 ### calculate the udpated coefficients
-b_new <- 
+b_new <- solve(wSSmat) %*% t(X05) %*% Sweight %*% z_init
 ```
 
 Print out the updated coefficients.  
 
 ```{r, solution_05g_b}
-### 
+b_new
 ```
 
