@@ -259,7 +259,7 @@ $$
 \begin{aligned}
   f(\beta, \sigma) = log(\mathrm{Exp} \left( \sigma \mid \nu \right)) \\ 
   f(\beta, \sigma) = log(\nu \cdot e^{-\nu\sigma}) \\ 
-  f(\beta, \sigma) \propto  \nu \sigma 
+  f(\beta, \sigma) \propto \nu \sigma 
 \end{aligned}
 $$
 log-prior on sigma does not depend on beta
@@ -291,7 +291,7 @@ Throughout the semester we have assumed that the prior mean on the $\boldsymbol{
 #### SOLUTION
 
 $$
-\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta)  - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma 
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -\frac{N}{2} \cdot log(\sigma^2) - \frac{1}{2 \cdot \sigma^2} (y - X\beta)^t(y - X\beta) - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d^2) - \nu \sigma 
 $$
 The beta prior then would become the equation above. The beta prior still has effects on the log posterior because only the mode of the prior distribution of beta changes. What really controls the strength of the prior should be tau_beta, which is the variable determining how diffuse the prior distribution of beta is.
 
@@ -310,7 +310,7 @@ Before performing the change-of-variables, let's rewrite the log-posterior to de
 #### SOLUTION
 
 $$
-\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -{N} \cdot log(\sigma) - \frac{1}{2 \cdot \sigma^2}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \sigma
+\log\left[ p \left( \boldsymbol{\beta}, \sigma \mid \mathbf{X},\mathbf{y} \right) \right] \propto -{N} \cdot log(\sigma) - \frac{1}{2 \cdot \sigma^2}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d^2) - \nu \sigma
 $$
 
 
@@ -361,9 +361,9 @@ $$
 $$
 \begin{aligned}
 \log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right] = \log \left[p\left(\boldsymbol{\beta},  g^{-1}(\varphi) \mid \mathbf{X}, \mathbf{y}\right)\right] + log(\frac{d(g^{-1}(\varphi))}{d\varphi}) \\
- = -{N} \cdot log(g^{-1}(\varphi)) - \frac{1}{2 \cdot g^{-1}(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu g^{-1}(\varphi) + \varphi \\
- = -{N} \cdot log(exp(\varphi)) - \frac{1}{2 \cdot exp(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot exp(\varphi) + \varphi \\
- = -{N} \cdot \varphi - \frac{1}{2 \cdot e^{2\varphi}}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}（\beta_d^2） - \nu \cdot e^\varphi + \varphi
+ = -{N} \cdot log(g^{-1}(\varphi)) - \frac{1}{2 \cdot g^{-1}(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d^2) - \nu g^{-1}(\varphi) + \varphi \\
+ = -{N} \cdot log(exp(\varphi)) - \frac{1}{2 \cdot exp(\varphi)^2}\cdot SSE - \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d^2) - \nu \cdot exp(\varphi) + \varphi \\
+ = -{N} \cdot \varphi - \frac{1}{2 \cdot e^{2\varphi}}\cdot SSE -  \frac{1}{2\tau_\beta^2}\sum_{d=0}^{D}(\beta_d^2) - \nu \cdot e^\varphi + \varphi
 \end{aligned}
 $$
 
@@ -398,7 +398,6 @@ Once the posterior mode has been identified, the second step of the Laplace Appr
 
 #### SOLUTION
 $$
-
 \frac{d^2p(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y})}{d\varphi^2} = -2SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi 
 $$
 
@@ -412,13 +411,10 @@ Let's now assume that we are using a very diffuse prior on the noise, and thus $
 
 #### SOLUTION
 $$
-\begin{aligned}
-\frac{d(\log \left[p\left(\boldsymbol{\beta},\varphi \mid \mathbf{X}, \mathbf{y}\right)\right])}{d\varphi} = 0 \\
--N  +SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi + 1 = 0 \\
+\frac{dlog(p(\beta, \varphi | X, y))}{d \varphi} = 0 \\
+N+SSE \cdot e^{-2\varphi} - \nu \cdot e^\varphi + 1 = 0 \\
 SSE_{OLS} \cdot e^{-2\varphi} = N - 1 \\
-\varphi_{MLE} = -\frac{1}{2}log(\frac{N - 1}{SSE_{OLS}}) 
-
-\end{aligned}
+\varphi_{MLE} = - \frac{1}{2} \cdot log(\frac{N - 1}{SSE_{OLS}}) 
 $$
 
 ## Problem 04
