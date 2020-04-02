@@ -43,12 +43,14 @@ $$
 
 Does this model include a non-linear relationship between the mean trend and the inputs?  
 
+solution:
 Yes, it does.
 
 ### 1b) (2 points)
 
 Is this a linear model? Why or why not?  
 
+solution:
 This is an linear model since the beta parameters are still linearly related to the linear predictor.
 
 ### 1c) (2 points)
@@ -111,6 +113,7 @@ You will continue working with the model specified in Problem 1. You will consid
 
 If you would fit the model in Problem 1 with the Laplace Approximation, why is it a good idea to transform $\sigma$ to a parameter $\varphi$ with a log-transformation?  
 
+solution:
 The MVN we can generate based on a Laplace Approximation is strictly symmetric of which the sigma value ranges from negative infinity to positive infinity. Yet the in log posterior the sigma is not allowed to be negative, and thus ne will need some transformation like logit function to enforce the bound on the unbounded noise sampled from MVN.
 
 ### 2b) (2 points)
@@ -125,37 +128,58 @@ The prior on the mean trend coefficients and $\sigma$ are the same as those used
 
 Based on these results, is the model from Problem 1 definitely worse than the model in this problem? Why or why not?  
 
+solution:
 Not necessarilly, we haven't gotten to know any testing errors this model might encounter. In the cases with simple trends this type of high level model might results in overfitting and model from Problem 1 might be superior. 
 
 ### 2c) (2 points)
 
 The Laplace Approximation allows us to estimate the log-Evidence. The log-Evidence includes a penalty term, in addition to the term associated with goodness-of-fit. How are models penalized based upon the Laplace Approximation's estimate to the log-Evidence?
 
-
-
+solution:
+According to Bayes Factors formula, the smaller the log[Evidence] is, the less plausible is a model. log[Evidence] consists of the sum of multiple terms, among which the $\frac{1}{2}log[2H|_\theta]$ has a negative sign, indicating that the log-determinant hessian matrix also known as the curvature of the log-posterior surface will penalizes the model performance.
+ 
 ### 2d) (2 points)
 
 Would you expect the penalty term to be lower or higher for the model from Problem 1 relative to the model introduced in Problem 2? Why?  
+
+solution:
+The complex model would be expected to have a higher penalty term, which is the log determinant of the hessian matrix and can be calculated as the summation of the local curvatures of all likelihoods. The hessian matrix would become larger and thus the determinant will have higher value as the number of beta parameters increases. Thus, more complex models have higher penalties.
 
 ### 2e) (2 points)
 
 If you decided to use k-fold cross-validation to compare the two models, how many times would each observation be used to evaluate the model performance if we used 5-fold cross-validation?  
 
+solution:
+4 times
+
 ### 2f) (2 points)
 
 If we use 5-fold cross-validation, how many times would we train and test each model?  
+
+solution:
+5 times
 
 ### 2g) (2 points)
 
 If we use 5-fold cross-validation how can we assess which model is better if we are interested in the RMSE?  
 
+solution:
+We can calculate the RMSE on each fold and plot those RMSE values for each spline in a box plot. By comparing RMSE values for each spline we can tell how much differently a model performs on different folds and what the average RMSE over all folds is. And thus, we can pick a model with small variability and small average RMSE.
+
 ### 2h) (2 points)
 
-How many times would we train each model if we used Leave-One-Out (LOO) cross-validation, instead of 5-fold cross-validation?  
+How many times would we train each model if we used Leave-One-Out (LOO) cross-validation, instead of 5-fold cross-validation?
+
+solution:
+We would train the model the same number of times as the number of observations.
 
 ### 2i) (2 points)
 
 Whether we use an information criterion or cross-validation to identify the best model, what are trying to guard against?  
+
+solution:
+We are trying to guard against using an overfitted model. 
+
 
 ## Problem 3
 
@@ -183,27 +207,57 @@ $$
 
 Is the model specified in the problem statement to Problem 3 a linear model?  
 
+solution:
+No, it is not.
+
 ### 3b) (2 points)
 
 As you can see in the model specification, the variable $\eta_n$ is related to the event probability, $\mu_n$, via a transformation or *link* function. Specifically, you are using the logit-transformation to relate $\mu_n$ to $\eta_n$.  
 
 Would you still use the logit-transformation even if you do not fit the model with the Laplace Approximation?  
+Yes, I would. Since, our model this time is a Bernoulli model, we calulate the probability of each input through bernoulli's function.
 
 ### 3c) (4 points)
 
 Write out the first 2 rows of the design matrix, $\mathbf{X}$, associated with the model defined in Problem 3.  
 
+
+$$
+\begin{aligned}
+1, x_{1,1}, x_{1,2} \\ 
+1, x_{2,1}, x_{2,2} 
+\end{aligned}
+$$
+
 ### 3d) (3 points)
 
 Write out the expression for the 2nd observation's log-likelihood. You may keep the expression in terms of the outcome, $y_{n=2}$, and the event probability, $\mu_{n=2}$.  
+
+$$
+log[p(y_n | \mu_n)] = y_n log[\mu_n] + (1-y_n)log[1 - \mu_n]
+$$
 
 ### 3e) (2 points)
 
 The Hessian matrix of the log-likelihood depends on the weighting matrix, $\mathbf{S}$. Describe in words what the weighting matrix contains along its main diagonal.  
 
+solution:
+the diagonal consists of the probability of the bernoulli weight of each observation.
+
 ### 3f) (8 points)
 
 Write out the contribution of the 2nd observation to the weighted sum-of-squares matrix.  
+
+$$
+\begin{aligned}
+x_{2,:} x_{2,:} = \\
+1, x_1, x_2,\\
+x_1, x_1^2, x_1x_2 \\ 
+x_2, x_1x_2, x_2^2
+
+\end{aligned}
+$$
+
 
 ### 3g) (2 points)
 
@@ -211,21 +265,36 @@ After fitting the model, you will make predictions on a hold-out set. You are fi
 
 The confusion matrix is calculated comparing each predicted classification to the observed class. What metric tells us the fraction of times the model is correct when the event is observed?  
 
+solution:
+the accuracy.
+
 ### 3h) (2 points)
 
-The ROC curve is a graphical tool for assessing the performance of a binary classifier. What threshold value is used to construct the ROC curve?  
+The ROC curve is a graphical tool for assessing the performance of a binary classifier. What threshold value is used to construct the ROC curve?
+
+solution:
+0.5 for both true positive and false positive rates. (the decision threshold used to build the confusion matrix?)
 
 ### 3i) (2 points)
 
 The ROC curve can be summarized as a single quantitative metric by integrating the area under the curve (AUC). What value for the AUC corresponds to random guessing?  
 
+solution:
+0.5. Since, true positive rate is equal to false positive rate.
+
 ### 3j) (2 points)
 
 If our model is struggling to correctly predict the event, can we just decrease the threshold value to improve performance? Why or why not?  
 
+solution:
+No we cannot. If we do that the decision threshold would have less correctness.
+
+
 ### 3k) (2 points)
 
 Now assume that we used Leave-One-Out (LOO) cross-validation to assess model performance and we are interested in Accuracy. What are the possible Accuracy values our model could achieve on the test set in each fold?  
+
+
 
 ## Problem 4
 
@@ -245,12 +314,20 @@ The variable $\mu_n$ is referred to as the rate, and is the expected value of a 
 
 Write out the expression for the log-likelihood of the $n$-th observation. Keep the expression in terms of the observed counts, $y_n$, and the rate $\mu_n$.  
 
+$$
+\begin{aligned}
+log(Poisson(y_n | \mu_n)) = log[\mu_n^{y_n} e^{-\mu_n}]- log[y_n!] \\
+= log[\mu_n^{y_n}] + log[e^{-\mu_n}] - log[y_n!]\\ 
+= y_nlog[\mu_n] -\mu_n - log[y_n!]
+\end{aligned}
+$$
+
 ### 4b) (3 points)
 
 In Poisson regression, we model the rate $\mu_n$. Thus, as with logistic regression we are actually modeling the expected value, not the outcome itself. The rate however is not modeled directly. As with logistic regression a transformation or *link* function is used to relate the rate, $\mu_n$, with a transformed variable, $\eta_n$:  
 
 $$ 
-\eta_n = g\left(\mu_n\right)
+\eta_n = g\left(\mu_n\right) 
 $$
 
 The rate is recovered from $\eta_n$ via the inverse link function:  
@@ -267,6 +344,10 @@ $$
 
 What is the inverse link function which allows back-transforming from $\eta_n$ to $\mu_n$?  
 
+$$
+\mu = exp(\eta_n)
+$$
+
 ### 4c) (12 points)
 
 You will work with a simple relationship between the single input, $x$, and the variable $\eta_n$. The deterministic function will be that the input is linearly related to the $\eta_n$:  
@@ -275,8 +356,26 @@ $$
 \eta_n = \beta_0 + \beta_1 x_n
 $$
 
-Derive the expression for the partial first derivative of the $n$-th log-likelihood with respect to $\beta_1$.  
+Derive the expression for the partial first derivative of the $n$-th log-likelihood with respect to $\beta_1$.
+
+$$
+\begin{aligned}
+\frac{d(y_nlog[\mu_n] -\mu_n - log[y_n!])}{d\beta_1} = \frac{dy_nlog[\mu_n]}{d\beta_1} - \frac{d\mu_n}{d\beta_1} - \frac{dlog[y_n!]}{d\beta_1} \\ 
+ = \frac{dy_nlog[\mu_n]}{d\beta_1} - \frac{d\mu_n}{d\beta_1}\\
+ = \frac{dy_nlog[exp(\beta_0 + \beta_1 x_n)]}{d\beta_1} - \frac{e^{\beta_0 + \beta_1 x_n}}{d\beta_1}\\
+ = \frac{dy_n(\beta_0 + \beta_1 x_n)}{d\beta_1} - \frac{e^{\beta_0 + \beta_1 x_n}}{d\beta_1}\\
+ =  y_nx_n - e^{\beta_0 + \beta_1 x_n} \cdot x_n\\
+\end{aligned}
+$$
 
 ### 4d) (10 points)
 
 Derive the expression for the partial second derivative of the log-likelihood with respect to $\beta_1$.  
+
+$$
+\begin{aligned}
+\frac{d^2(y_nlog[\mu_n] -\mu_n - log[y_n!])}{d\beta_1^2} = \frac{d(y_nx_n - e^{\beta_0 + \beta_1 x_n} \cdot x_n)}{d\beta_1}\\
+=x_n \cdot e^{\beta_0 + \beta_1 x_n}\cdot x_n
+=x_n^2 \cdot e^{\beta_0 + \beta_1 x_n}
+\end{aligned}
+$$
