@@ -210,10 +210,8 @@ my_neuralnet_sse <- function(theta, my_info)
   A <- X %*% Bmat
   # pass through the non-linear transformation function
   H <- my_info$transform_hidden(A)
-  
   # calculate the response (the output layer)
   f <- H %*% aw + a0
-  
   # calculate the SSE
   t(my_info$yobs - f) %*% (my_info$yobs - f)
 }
@@ -294,7 +292,10 @@ Let's start with the partial first derivatives of $SSE$ with respect to the outp
 #### SOLUTION
 
 $$
-
+\begin{aligned}
+\delta_n^2 = (y_n - \alpha_0 + \sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2 \\
+\frac{d\delta_n}{d\alpha_k} =2 \cdot (\alpha_0 + h_{n,k}\cdot\alpha_k - y) \cdot h_{n,k} = 2 \cdot \delta_{n,k} \cdot h_{n,k}
+\end{aligned}
 $$
 
 ### 2b)
