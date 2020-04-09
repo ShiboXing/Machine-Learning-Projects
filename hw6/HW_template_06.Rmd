@@ -293,8 +293,8 @@ Let's start with the partial first derivatives of $SSE$ with respect to the outp
 
 $$
 \begin{aligned}
-\delta_n^2 = (y_n - \alpha_0 + \sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2 \\
-\frac{d\delta_n}{d\alpha_k} =2 \cdot (\alpha_0 + h_{n,k}\cdot\alpha_k - y) \cdot h_{n,k} = 2 \cdot \delta_{n,k} \cdot h_{n,k}
+\delta_n^2 = (y_n - \alpha_0 -\sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2 \\
+\frac{\partial \delta_n}{\partial \alpha_k} =2 \cdot (y - \alpha_0 - h_{n,k}\cdot\alpha_k) \cdot h_{n,k} = -2 \cdot \delta_{n} \cdot h_{n,k}
 \end{aligned}
 $$
 
@@ -316,7 +316,12 @@ You will write out the above summation in matrix/vector notation, based on your 
 
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$ 
+\begin{aligned}
+\sum_{n=1}^N\frac{\partial \delta_n}{\alpha_k} = -2 \cdot \sum_{n=1}^N\delta_{n} \cdot h_{n,k} \\
+ = -2 \cdot \delta^T \cdot H_{:,k} 
+\end{aligned}
+$$
 
 ### 2c)
 
@@ -328,7 +333,10 @@ The next step is to "stack" all output layer parameter partial derivatives toget
 
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$
+  -2   \cdot \delta ^T \cdot H \ \ (1 \times K)
+$$
+Yeah, we are missing one parameter, $a_0$.
 
 ### 2d)
 
@@ -337,10 +345,20 @@ You should have determined that one of the output layer parameters is missing fr
 #### PROBLEM
 
 **Account for the missing output layer parameter from Problem 2c) and write out the complete vector of partial derivatives of the $SSE$ with respect to the output layer parameters, $\mathbf{g}_{\alpha}$.**  
-
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$
+\begin{aligned}
+\frac{\partial}{\partial \alpha_0} \left(SSE\right) = \frac{\partial(y_n - \alpha_0 - \sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2}{\partial\alpha_0} \\ 
+\frac{\partial}{\partial \alpha_0} \left(SSE\right) = -2 \cdot \delta  \\
+
+\frac{\partial}{\partial g_\alpha} \left(SSE\right) = -2 \delta^T \cdot \begin{bmatrix}
+1 & H  
+\end{bmatrix} \ (append \ a\ column\ of\ 1s)\\ 
+\end{aligned}
+
+
+$$
 
 ### 2e)
 
@@ -358,7 +376,9 @@ $$
 
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$
+\frac{\partial{R_n}}{\partial{\beta_{dk}}} =  -2\xi_{n,k}x_{n,d}
+$$
 
 ### 2f)
 
@@ -392,7 +412,11 @@ Within this assignment, you will be responsible for creating the $\mathbf{G}_{p}
 
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$
+g_{n,k}^{\prime} = h_{n,k}(1 - h_{n,k}) \\ 
+G_p = \sum_n^N\sum_k^K(h_{n,k}(1 - h_{n,k})) \\
+G_p = H  \circ  (1 - H)
+$$
 
 ### 2g)
 
@@ -405,7 +429,7 @@ $$
 The first column $\mathbf{J}$ contains the derivatives of the $SSE$ with respect to the first hidden unit parameters. The second column contains the derivatives of the $SSE$ with respect to the second hidden unit parameters, and so on. Once the $\mathbf{J}$ matrix is calculated the gradient with respect to the hidden unit parameters can be assembled by stacking each column of $\mathbf{J}$ on top of each other. This stacking operation is usually denoted by the $\mathrm{vec}\left(\cdot\right)$ operation. Thus, the gradient of the $SSE$ with respect to all $\beta$-parameters is:  
 
 $$ 
-\mathbf{g}_{\beta} = \mathrm{vec}\left(\mathbf{J}\right)
+\mathbf{g}_{\beta} = \mathrm{vec}\left(\mathbf{J}\right) 
 $$
 
 The stacking operation can be performed using the `as.vector()` function in `R`. Your task is to therefore define the matrix operation to calculate the $\mathbf{J}$ matrix using the design matrix, $\mathbf{X}$, and the hidden unit error matrix $\mathbf{E}$.  
@@ -418,7 +442,9 @@ The stacking operation can be performed using the `as.vector()` function in `R`.
 
 #### SOLUTION
 
-Your solution here, add as many equation blocks as you feel are necessary.  
+$$
+J = -2 X^T \cdot E
+$$
 
 ## Problem 3
 
@@ -441,7 +467,7 @@ Complete the `logistic_deriv()` function.
 ```{r, solution_03a}
 logistic_deriv <- function(H)
 {
-  ###
+  H * (1 - H)
 }
 ```
 
@@ -475,7 +501,6 @@ backprop_grad_batch <- function(theta, my_info)
   length_beta <- ncol(X)
   total_num_betas <- my_info$num_hidden * length_beta
   beta_vec <- theta[1:total_num_betas]
-  
   # extract the output layer parameters
   a_all <- theta[(total_num_betas + 1):length(theta)]
   
@@ -491,34 +516,33 @@ backprop_grad_batch <- function(theta, my_info)
   
   # calculate the linear predictors associated with
   # each hidden unit
-  A <- 
+  A <- X %*% Bmat
   
   # pass through the non-linear transformation function
-  H <- 
+  H <- my_info$transform_hidden(A)
   
   # calculate the response
-  f <- 
+  f <- H %*% aw + a0
   
   # - # backward step # - #
-  
   # calculate the output error - the delta
-  d <- 
+  d <- my_info$yobs - f
   
   # calculate the gradient with respect to the output layer
   # parameters (include the output layer intercept - bias)
-  da <- 
+  
+  da <- -2 * t(d) %*% cbind(rep(1, ncol(X)), H)
   
   # calculate derivative of the transformation function
   Gp <- my_info$transform_deriv(H)
   
   # reshape output layer weights
   AW <- matrix(rep(aw, nrow(X)), nrow(X), byrow=TRUE)
-  
   # calculate hidden unit error
-  E <- AW * Gp * d
+  E <- AW * Gp * rep(d, my_info$num_hidden)
   
   # calculate the J matrix
-  J <- 
+  J <- -2 * (t(X) %*% E)
   
   # stack all columns into the gradient vector
   db <- as.vector( J )
@@ -549,8 +573,9 @@ The `theta` vector is organized such that all hidden unit parameters are listed 
 The backpropagation method is applied in the code chunk below.  
 
 ```{r, solution_03c_a}
-backprop_grad_batch( )
+backprop_grad_batch(rep(0, 7), info_two_units)
 ```
+Since all 7 parameters, including the hidden parameters beta and fully-connected layers' alphas are all zeros, the changes on hidden parameters values won't have any effect on the output response unless the alphas are changes. The output response, currently zero, can only be changed if alphas are non-zeros Thus, the derivative of the hidden layer parameters are zeros as well. 
 
 ### 3d)
 
@@ -567,26 +592,30 @@ It's now time to use the analytic expression for the gradient within the optimiz
 The optimization is performed in the code chunk below.  
 
 ```{r, solution_03d_a}
-optim_backprop_2_a <- optim( ,
-                             ,
-                            gr = ,
-                            ,
-                            method = ,
-                            hessian = ,
-                            control = list(maxit = 5000))
+optim_backprop_2_a <- optim(rep(0, 7) ,
+                       my_neuralnet_sse,
+                       gr =  NULL,
+                       info_two_units,
+                       method = 'BFGS',
+                       hessian =  TRUE,
+                       control = list(maxit = 5001))
+optim_backprop_2_a$par
 ```
 
 What are the optimal parameter estimates, and how do they compare to the previous case based on finite differences?  
 
+solution:
+the optimal parameter estimates are the same as the optim estimations based on initial guess of all zeros. It seems like the finite gradient fitting and back-propagation to the beta parameters all fall into the same minima.
+
 ### 3e)
 
-Let's now fit a more complicated neural network with more hidden units to see the speed benefits of the analytic gradient. You will fit a neural network with 11 hidden units. To do so, you must create a new list of required information. Do you need to create a new design matrix since you are changing the number of hidden units?  
+Let's now fit a more complicated neural network with more hidden units to see the speed benefits of the analytic gradient. You will fit a neural network with 11 hidden units. To do so, you must create a new list of required information. Do you need to create a new design matrix since you are changing the number of hidden units? 
 
 A few of the variables are specified for you below. Namely, the function variables are assigned to be the same functions used before.  
 
 #### PROBLEM
 
-**Create the list of required information to fit a neural network with 12 hidden units. After creating the list, you must calculate the total number of parameters in the model. How many parameters are there compared to the model with just 2 hidden units?**  
+**Create the list of required information to fit a neural network with 11 hidden units. After creating the list, you must calculate the total number of parameters in the model. How many parameters are there compared to the model with just 2 hidden units?**  
 
 **Did you need to change the design matrix in order to change the number of hidden units?**  
 
@@ -596,20 +625,26 @@ The list of required information is specified below.
 
 ```{r, solution_03e}
 info_11_units <- list(
-  yobs = ,
-  design_matrix = ,
-  num_hidden = ,
+  yobs = train_data$y,
+  design_matrix = Xmat,
+  num_hidden = 11,
   transform_hidden = boot::inv.logit
 )
 
 info_11_units$transform_deriv <- logistic_deriv
 
-info_11_units$num_params <- 
+info_11_units$num_params <- info_11_units$num_hidden * ncol(Xmat) + info_11_units$num_hidden + 1
 ```
 
 How many parameters are in the model with 11 units?  
 
+```{r}
+info_11_units$num_params 
+```
+
 Do we need to define a new design matrix?  
+
+No we don't need to. Since the Beta matrix still has the same # of rows as before, which are the unknown parameters in the original function. 
 
 ### 3f)
 
@@ -627,12 +662,12 @@ The 11 hidden unit neural network is fit in the code chunk below. Notice that th
 
 ```{r, solution_03f_a}
 start_optim_clock <- Sys.time()
-optim_fit_11 <- optim( ,
-                      ,
-                      gr = ,
-                      ,
-                      method = ,
-                      hessian = ,
+optim_fit_11 <- optim(rep(0, info_11_units$num_params) ,
+                       my_neuralnet_sse,
+                       gr =  NULL,
+                       info_11_units,
+                       method = 'BFGS',
+                       hessian =  TRUE,
                       control = list(maxit = 1e4))
 end_optim_clock <- Sys.time()
 
@@ -661,12 +696,12 @@ The 11 hidden unit neural network is fit in the code chunk below using the analy
 
 ```{r, solution_03g_a}
 start_backprop_clock <- Sys.time()
-backprop_fit_11 <- optim( ,
-                         ,
-                         gr = ,
-                         ,
-                         method = ,
-                         hessian = ,
+backprop_fit_11 <- optim(rep(0, info_11_units$num_params) ,
+                         my_neuralnet_sse,
+                         gr =  backprop_grad_batch,
+                         info_11_units,
+                         method = 'BFGS',
+                         hessian =  TRUE,
                          control = list(maxit = 1e4))
 end_backprop_clock <- Sys.time()
 
