@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Include the names of your collaborators here.  
+Siyu Zhang, Yuanpu Ma
 
 ## Overview
 
@@ -292,10 +292,7 @@ Let's start with the partial first derivatives of $SSE$ with respect to the outp
 #### SOLUTION
 
 $$
-\begin{aligned}
-\delta_n^2 = (y_n - \alpha_0 -\sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2 \\
 \frac{\partial \delta_n}{\partial \alpha_k} =2 \cdot (y - \alpha_0 - h_{n,k}\cdot\alpha_k) \cdot h_{n,k} = -2 \cdot \delta_{n} \cdot h_{n,k}
-\end{aligned}
 $$
 
 ### 2b)
@@ -317,10 +314,8 @@ You will write out the above summation in matrix/vector notation, based on your 
 #### SOLUTION
 
 $$ 
-\begin{aligned}
 \sum_{n=1}^N\frac{\partial \delta_n}{\alpha_k} = -2 \cdot \sum_{n=1}^N\delta_{n} \cdot h_{n,k} \\
  = -2 \cdot \delta^T \cdot H_{:,k} 
-\end{aligned}
 $$
 
 ### 2c)
@@ -348,16 +343,15 @@ You should have determined that one of the output layer parameters is missing fr
 #### SOLUTION
 
 $$
-\begin{aligned}
-\frac{\partial}{\partial \alpha_0} \left(SSE\right) = \frac{\partial(y_n - \alpha_0 - \sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2}{\partial\alpha_0} \\ 
-\frac{\partial}{\partial \alpha_0} \left(SSE\right) = -2 \cdot \delta  \\
+\frac{\partial}{\partial \alpha_0} \left(SSE\right) = \frac{\partial(y_n - \alpha_0 - \sum_{k=1}^{K}(h_{n,k}\cdot\alpha_k)) ^ 2}{\partial\alpha_0}
+$$
 
-\frac{\partial}{\partial g_\alpha} \left(SSE\right) = -2 \delta^T \cdot \begin{bmatrix}
-1 & H  
-\end{bmatrix} \ (append \ a\ column\ of\ 1s)\\ 
-\end{aligned}
+$$
+\frac{\partial}{\partial \alpha_0} \left(SSE\right) = -2 \cdot \delta  
+$$
 
-
+$$
+  \frac{\partial}{\partial g_\alpha} (SSE) = -2 \delta^T \cdot [1\ \ H ]  \ (append \ a\ column\ of\ 1s)
 $$
 
 ### 2e)
@@ -755,12 +749,12 @@ With the above arguments specified, `caret` will use 5-fold cross-validation to 
 
 ```{r, solution_04b_a}
 set.seed(1101)
-fit_nnet_1 <- train( , 
-                    data = ,
-                    method = ,
-                    metric = ,
-                    preProc = ,
-                    trControl = )
+fit_nnet_1 <- train( y ~ x, 
+                    data = train_data ,
+                    method = 'neuralnet' ,
+                    metric = 'RMSE',
+                    preProc = c("center", "scale"),
+                    trControl = my_ctrl)
 ```
 
 Display the results to the screen below.  
@@ -770,6 +764,9 @@ fit_nnet_1
 ```
 
 Which one is the best?  
+there are 50 observations in each fold's test set.
+the one with 5 hidden units is the best.
+
 
 ### 4c)
 
@@ -788,9 +785,9 @@ By default, `caret` tries out just a few hidden units in the first layer and doe
 Set the grid of hidden units to use.  
 
 ```{r, solution_04c_a}
-nnet_grid <- expand.grid(layer1 = ,
-                         layer2 = ,
-                         layer3 = )
+nnet_grid <- expand.grid(layer1 = seq(2, 14, 3),
+                         layer2 = seq(0, 6, 2),
+                         layer3 = 0)
 ```
 
 Train the model below. Note that this code chunk may take a few minutes to complete, depending on your machine.  
@@ -798,13 +795,13 @@ Train the model below. Note that this code chunk may take a few minutes to compl
 ```{r, solution_04c_b}
 set.seed(1101)
 start_train_clock <- Sys.time()
-fit_nnet_cv <- train( ,
-                     data = ,
-                     method = ,
-                     metric = ,
-                     tuneGrid = ,
-                     preProc = ,
-                     trControl = )
+fit_nnet_cv <- train( y ~ x, 
+                    data = train_data ,
+                    method = 'neuralnet' ,
+                    metric = 'RMSE',
+                    preProc = c("center", "scale"),
+                    trControl = my_ctrl,
+                    tuneGrid = nnet_grid)
 end_train_clock <- Sys.time()
 
 train_runtime <- end_train_clock - start_train_clock
@@ -822,7 +819,8 @@ Print out the cross-validation results.
 fit_nnet_cv
 ```
 
-What's the best model?  
+What's the best model? 
+the best model is the one where layer has 14 units layer 2 and 3 have zero (where RMSE is the smallest)
 
 ### 4d)
 
@@ -857,5 +855,4 @@ fit_nnet_cv$results %>% tbl_df() %>%
 **In class we discussed the "one-standard error rule" for selecting between models with similar cross-validation performance. Based on that concept, which model would you consider to be "good enough"?**  
 
 #### SOLUTION
-
-Your answer here.  
+The model of which layer 1 has 5 would and layer 2 has 0 unit would be the good enough. It has the lowest RMSE values. 
