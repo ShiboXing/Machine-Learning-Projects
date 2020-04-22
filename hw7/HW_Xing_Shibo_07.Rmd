@@ -1,7 +1,7 @@
 ---
 title: "CS 1675 Spring 2020: Homework 07"
 subtitle: "Assigned April 11, 2020; Due: April 19, 2020"
-author: "Your name here"
+author: "Shibo Xing"
 date: "Submission time: April 19, 2020 at 5:00PM EST"
 output: pdf_document
 ---
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #### Collaborators
 
-Include the names of your collaborators here.  
+Siyu Zhang
 
 ## Overview
 
