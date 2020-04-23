@@ -1,7 +1,7 @@
 ---
 title: "CS 1675 Spring 2020: Final Exam"
 subtitle: "Assigned April 20, 2020; Due: April 23, 2020"
-author: "Your name here"
+author: "Shibo Xing"
 date: "Submission time: April 23, 2020 at 9:00PM EST"
 output: pdf_document
 ---
@@ -29,20 +29,21 @@ You are interested in fitting a single layer neural network with 2 inputs, $x_1$
 Write out the expression for the $n$-th observation of the first hidden unit, $h_{n,1}$, where the non-linear transformation function is to be denoted by the generic expression $g\left(\cdot\right)$. You do **not** need to use matrix notation.  
 
 $$
-  h_{n,1} = g(x_n \cdot \beta_{:,1})
+  h_{n,1} = g([1\ x_n] \cdot \beta_{:,1})
 $$
 ### 1b)
 
 Write out the expression for the $n$-th observation of the second hidden unit, $h_{n,2}$, where the non-linear transformation function is to be denoted by the generic expression $g\left(\cdot\right)$. You do **not** need to use matrix notation.  
 
 $$
-  h_{n,2} = g(x_n \cdot \beta_{:,2})
+  h_{n,2} = g([1\  x_n] \cdot \beta_{:,2})
 $$
 
 ### 1c)
 
 Write out the expression for the $n$-th observation's neural network response, $f_n$, in terms of the hidden unit responses and the output layer parameters.  
 
+where a0 is a column vector of the same bias value
 $$
   f_n = a_0 + h_n \cdot a_n
 $$
@@ -59,8 +60,9 @@ where $\eta_{n,k}$ is the linear predictor for the $n$-th observation of the $k$
 
 Derive the expression for the neural network response, $f_n$, as a function of the inputs and unknown parameters, assuming the linear transformation function. Thus, you must derive an expression that does not depend on either of the $h_{n,k}$ or $\eta_{n,k}$ terms.  
 
+where a0 is a column vector of the same bias value
 $$
-  f_n = \alpha_0 + x_n \cdot \beta \cdot \alpha 
+  f_n = \alpha_0 + [1 \  x_n] \cdot \beta \cdot \alpha 
 $$
 
 ### 1e)
@@ -79,12 +81,17 @@ You will continue working with a single layer neural network with 2 inputs and 2
 
 In lecture we discussed calculating all hidden unit linear predictors with matrix math by assembling the matrix of all hidden unit parameters, $\mathbf{B}$. Write out the expression for the matrix of all hidden unit linear predictors, $\mathbf{A}$, using the $\mathbf{X}$ and $\mathbf{B}$ matrices.  
 
+$$
+  A = XB
+$$
+
+
 ### 2b)
 
 If there are $N = 200$ training points, what is the dimensionality of the $\mathbf{B}$ matrix? 
 
 $$
-  2 \times 2
+  3 \times 2
 $$
 
 ### 2c)
@@ -92,7 +99,7 @@ $$
 What is the dimensionality of the $\mathbf{A}$ matrix?  
 
 $$
-  N \times 2
+  N \times 2 
 $$
 
 ### 2d)
@@ -112,6 +119,7 @@ How many output layer parameters would a neural network model have if you used 5
 
 solution:
 $\alpha$ vector will have 5 parameters $\alpha_0$ will still be a single unit.
+together 6 parameters.
 
 
 ### 2f)
@@ -119,7 +127,7 @@ $\alpha$ vector will have 5 parameters $\alpha_0$ will still be a single unit.
 What is the dimensionality of the $\mathbf{B}$ matrix if we use 7 inputs instead of 2 inputs? Assume that we are using the model with 5 hidden units.  
 
 $$
-  7 \times 5
+  8 \times 5
 $$
 
 ## Problem 03
@@ -138,7 +146,7 @@ The continuous response, $f_n$, depends on the output layer parameters, $\alpha_
 Write out the expression for the $n$-th observation's continuous response in terms of the hidden unit responses and the output layer parameters. You do **not** need to use matrix notation.  
 
 $$
-  f_n = \alpha_0 + \sum^5_{k = 1}(h_{n,k} \cdot \alpha_k)
+  f_n = \alpha_0 + \sum^3_{k = 1}(h_{n,k} \cdot \alpha_k)
 $$
 
 ### 3b)
@@ -152,7 +160,7 @@ $$
 Write out the expression for the $n$-th observation's binary cross entropy loss, $L_n$, in terms of the observed binary outcome $y_n$ and the neural network event probability $\mu_n$.  
 
 $$
-  L_n = y_n \cdot log(\mu_n) + (1-y_n) \cdot log(1-\mu_n)
+  L_n =- y_n \cdot log(\mu_n) - (1-y_n) \cdot log(1-\mu_n)
 $$
 
 ### 3c)
@@ -172,7 +180,7 @@ in terms of other "component" derivatives.
 $$
 \begin{aligned}
   \frac{\partial L_n}{\partial \alpha_1} = \frac{\partial (y_n \cdot log(\mu_n))}{\partial \alpha_1} + \frac{\partial ((1-y_n) \cdot log(1-\mu_n))}{\partial \alpha_1} \\
-= \frac{\partial (y_n \cdot log(\mu_n))}{\partial \alpha_1} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial \alpha_1} \cdot \frac{\partial f_n}{\partial \alpha_1} - \frac{\partial ((1-y_n) \cdot log(1-\mu_n))}{\partial \alpha_1} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial \alpha_1} \cdot \frac{\partial f_n}{\partial \alpha_1} 
+= \frac{\partial (y_n \cdot log(\mu_n))}{\partial \mu_n} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial f_n} \cdot \frac{\partial f_n}{\partial \alpha_1} - \frac{\partial ((1-y_n) \cdot log(1-\mu_n))}{\partial \mu_n} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial f_n} \cdot \frac{\partial f_n}{\partial \alpha_1} 
 \end{aligned}
 $$
 
@@ -185,8 +193,8 @@ Derive the expression the partial derivative of $L_n$ with respect to $\alpha_1$
 
 $$
 \begin{aligned}
-  \frac{\partial L_n}{\partial \alpha_1} = \frac{\partial (y_n \cdot log(\mu_n))}{\partial \alpha_1} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial \alpha_1} - \frac{\partial ((1-y_n) \cdot log(1-\mu_n))}{\partial \alpha_1} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial \alpha_1} \\ 
-= \frac{1}{\mu_n} \cdot \frac{1-f_n}{f_n} \cdot h_{n,k} - \frac{1}{1-\mu_n} \cdot \frac{1-f_n}{f_n} \cdot h_{n,k} 
+ \frac{\partial (y_n \cdot log(\mu_n))}{\partial \mu_n} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial f_n} \cdot \frac{\partial f_n}{\partial \alpha_1} - \frac{\partial ((1-y_n) \cdot log(1-\mu_n))}{\partial \mu_n} \cdot \frac{\partial (logit^{-1}(f_n))}{\partial f_n} \cdot \frac{\partial f_n}{\partial \alpha_1}  \\ 
+= \frac{y_n}{\mu_n} \cdot \frac{e^{f_n}}{(1+e^{f_n})^2} \cdot h_{n,1} - \frac{1-y_n}{1-\mu_n} \cdot \frac{e^{f_n}}{(1+e^{f_n})^2} \cdot h_{n,1} 
 \end{aligned}
 $$
 
@@ -223,7 +231,7 @@ b) Subsampling
 c) Linking    
 d) None of the above  
 
-**Your Answer:**  a
+**Your Answer:**  d
 
 ### 4c)
 
@@ -240,7 +248,7 @@ d) Clustering
 
 Should we be worried that increasing the number of trees in a bagged tree model will lead to overfitting? Why or why not?  
 
-solution: We shouldn't be worried. Bagging method simply lets us use the avergae of the predictions from all the trees as the answer, but the number of times each model is trained doesn't increase as the number of trees increases.
+solution: We shouldn't be worried. Bagging method simply lets us use the average of the predictions from all the trees as the answer, but the number of times each model is trained doesn't increase as the number of trees increases.
 
 ### 4e)
 
@@ -258,7 +266,7 @@ b) 12
 c) 25  
 d) 0  
 
-**Your Answer:**  
+**Your Answer:**  c
 
 ### 4g)
 
@@ -269,7 +277,7 @@ b) The error from the previous tree
 c) The learning rate from the tree  
 d) The dendogram from the previous tree  
 
-**Your Answer:**  
+**Your Answer:**  b
 
 ### 4h)
 
@@ -280,7 +288,7 @@ b) Less trees
 c) Equal number of trees  
 d) Depends on the weight decay  
 
-**Your Answer:**  
+**Your Answer:**  a
 
 ## Problem 05
 
@@ -294,19 +302,27 @@ $$
 
 Which of the three matrices, $\mathbf{U}$, $\mathbf{S}$, or $\mathbf{V}$ are related to the eigenvalues of the covariance matrix of the variables contained in the original matrix $\mathbf{X}$?  
 
+solution:
+S
+
 ### 5b)
 
-Which of the matrices correspond to the eigenvectors of the covariance matrix of $\mathbf{X}$?  
+Which of the matrices correspond to the eigenvectors of the covariance matrix of $\mathbf{X}$?
+
+solution:
+V
 
 ### 5c)
 
 TRUE or FALSE: The first principal component (PC) is uncorrelated to the second PC, but is correlated to all other PCs.  
 
-**Your Answer:**  
+**Your Answer:**  FALSE
 
 ### 5d)
 
 What is the reconstruction error equal to if all PCs are used to reconstruct the original variables?  
+
+solution: 0
 
 ### 5e)
 
@@ -317,11 +333,13 @@ b) Proportion of variance explained
 c) Eigenvalue criterion  
 d) Hartigan's rule  
 
-**Your Answer:**  
+**Your Answer:** d
 
 ### 5f)
 
 Why is it usually a good idea to standardize the variables before performing PCA?  
+
+solution: A high standard error of a variable means a high weight of that variable. We can normalize the variables to let them have the same weight.
 
 ### 5g)
 
@@ -332,7 +350,7 @@ b) The Likelihood
 c) Distance  
 d) Variable averages  
 
-**Your Answer:**  
+**Your Answer:**  c
 
 ## Problem 06
 
@@ -347,7 +365,7 @@ b) The probability of the event, $\mu$
 c) The logistic function  
 d) The $\boldsymbol{\beta}$ parameters are the only unknowns  
 
-**Your Answer:**  
+**Your Answer:**  a
 
 ### 6b)
 
@@ -358,7 +376,7 @@ b) The variance of the $\boldsymbol{\beta}$ parameters
 c) The marginal likelihood  
 d) The sum of squared errors  
 
-**Your Answer:**  
+**Your Answer:**  d
 
 ### 6c)
 
@@ -372,7 +390,7 @@ c) $\left(\mathbf{X}^{T} \mathbf{X} \right)^{-1}$
 
 d) The MLE does not have a closed form solution  
 
-**Your Answer:**  
+**Your Answer:**  a
 
 ### 6d)
 
@@ -383,7 +401,7 @@ b) How we will remove outliers
 c) The prior distributions for all unknown parameters  
 d) The marginal likelihood  
 
-**Your Answer:**  
+**Your Answer:**  c
 
 ### 6e)
 
@@ -394,7 +412,7 @@ b) Determine the Hessian matrix at the posterior mode
 c) Calculate R-squared at the posterior mode  
 d) Invert the Hessian matrix  
 
-**Your Answer:**  
+**Your Answer:**  c
 
 ### 6f)
 
@@ -405,7 +423,7 @@ b) A Multinomial
 c) A Multivariate Normal  
 d) Independent Gaussians  
 
-**Your Answer:**  
+**Your Answer:**  c
 
 ## Problem 07
 
@@ -413,24 +431,34 @@ d) Independent Gaussians
 
 Lasso regression is analogous to a Bayesian linear model with what kind of prior distribution?  
 
+solution: Laplace prior distributions
+
+
 ### 7b)
 
 Bayesian inference for a constant unknown event probability $\mu$ with a Binomial likelihood and a Beta prior distribution results in what type of posterior distribution on $\mu$?  
+
+solution: Beta distribution
+
 
 ### 7c)
 
 What makes a linear model linear?  
 
+solution: the fact that the coefficiencts (unknown parameters) have a linear relationship
+
 ### 7d)
 
 TRUE or FALSE: Logistic regression does not have a closed form solution for the Maximum Likelihood Estimates (MLEs) of the unknown parameters.  
 
-**Your Answer:**  
+**Your Answer:**  TRUE
 
 ### 7e)
 
 Fitting logistic regression models by maximizing the liklihood breaks down under what condition?  
 
+solution: linearly separated classes, a diffuse prior
+
 ### 7f)
 
-The basic definition of probability is:  
+The basic definition of probability is:  the likelihood of an event
