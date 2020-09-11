@@ -6,3 +6,4 @@
 .Rproj.user
 __pycache__/
 img_align_celeba/
+checkpoints/
